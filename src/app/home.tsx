@@ -1,6 +1,8 @@
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
+import { useState } from "react";
+import { AdminDashboardSection } from "./admin_dashboard";
 
 const styles = StyleSheet.create({
     container: {
@@ -9,8 +11,8 @@ const styles = StyleSheet.create({
     },
     headerGradient: {
         paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 32,
+        paddingTop: 30,
+        paddingBottom: 40,
         backgroundColor: "#1976D2",
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
@@ -24,7 +26,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 20,
     },
     badge: {
         paddingHorizontal: 14,
@@ -42,6 +43,65 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
         letterSpacing: 0.3,
+    },
+    profileArea: {
+        position: "relative",
+    },
+    profileButton: {
+        width: 38,
+        height: 38,
+        borderRadius: 19,
+        backgroundColor: "rgba(255,255,255,0.22)",
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.35)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    profileButtonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "700",
+    },
+    switcherMenu: {
+        position: "absolute",
+        top: 46,
+        right: 0,
+        width: 200,
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        padding: 8,
+        zIndex: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.18,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    switcherTitle: {
+        fontSize: 11,
+        color: "#90A4AE",
+        paddingHorizontal: 8,
+        paddingVertical: 6,
+        fontWeight: "600",
+    },
+    switcherOption: {
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginBottom: 6,
+    },
+    switcherOptionActive: {
+        backgroundColor: "#E3F2FD",
+    },
+    switcherOptionLabel: {
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#263238",
+    },
+    switcherOptionSub: {
+        marginTop: 2,
+        fontSize: 11,
+        color: "#78909C",
     },
     balanceSection: {
         flexDirection: "row",
@@ -351,12 +411,59 @@ const AllowanceItem = ({ icon, title, amount, used, total, percentage }: any) =>
 
 export default function Home() {
     const router = useRouter();
+    const [accountMode, setAccountMode] = useState<"personal" | "business">("personal");
+    const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
+
+    const isBusiness = accountMode === "business";
+
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            onScrollBeginDrag={() => setShowAccountSwitcher(false)}
+        >
             <View style={[styles.headerGradient]}>
                 <View style={styles.topBar}>
                     <View style={styles.badge}>
-                        <Text style={styles.badgeText}>China Trip 🏮</Text>
+                        <Text style={styles.badgeText}>{isBusiness ? "Business Admin" : "China Trip 🏮"}</Text>
+                    </View>
+                    <View style={styles.profileArea}>
+                        <TouchableOpacity
+                            style={styles.profileButton}
+                            activeOpacity={0.8}
+                            onPress={() => setShowAccountSwitcher((prev) => !prev)}
+                        >
+                            <Text style={styles.profileButtonText}>{isBusiness ? "BA" : "P"}</Text>
+                        </TouchableOpacity>
+
+                        {showAccountSwitcher && (
+                            <View style={styles.switcherMenu}>
+                                <Text style={styles.switcherTitle}>Switch Account</Text>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    style={[styles.switcherOption, !isBusiness && styles.switcherOptionActive]}
+                                    onPress={() => {
+                                        setAccountMode("personal");
+                                        setShowAccountSwitcher(false);
+                                    }}
+                                >
+                                    <Text style={styles.switcherOptionLabel}>Personal Account</Text>
+                                    <Text style={styles.switcherOptionSub}>Current wallet and rewards</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    style={[styles.switcherOption, isBusiness && styles.switcherOptionActive]}
+                                    onPress={() => {
+                                        setAccountMode("business");
+                                        setShowAccountSwitcher(false);
+                                    }}
+                                >
+                                    <Text style={styles.switcherOptionLabel}>Business Admin</Text>
+                                    <Text style={styles.switcherOptionSub}>Team budgets and approvals</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -365,14 +472,14 @@ export default function Home() {
                     <View style={styles.balanceIcon}>
                         <Text style={{ fontSize: 18, color: "#fff" }}>✓</Text>
                     </View>
-                    <Text style={styles.balanceText}>RM 0.30</Text>
+                    <Text style={styles.balanceText}>{isBusiness ? "RM 42,860" : "RM 0.30"}</Text>
                     <Text style={styles.balanceEye}>👁️</Text>
                 </View>
 
                 {/* View Details */}
                 <TouchableOpacity activeOpacity={0.7}>
                     <Text style={styles.viewDetailsText}>
-                        View balance details →
+                        {isBusiness ? "View company account details →" : "View balance details →"}
                     </Text>
                 </TouchableOpacity>
 
@@ -380,133 +487,133 @@ export default function Home() {
                 <View style={styles.actionButtons}>
                     <TouchableOpacity style={styles.outlineButton} activeOpacity={0.7}>
                         <Text style={styles.outlineButtonIcon}>+</Text>
-                        <Text style={styles.outlineButtonText}>Add money</Text>
+                        <Text style={styles.outlineButtonText}>{isBusiness ? "Top up company" : "Add money"}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.7}>
-                        <Text style={styles.viewDetailsText}>Transactions →</Text>
+                        <Text style={styles.viewDetailsText}>{isBusiness ? "Approvals →" : "Transactions →"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            {/* Quick Actions Card */}
-            <View style={styles.quickActionsContainer}>
-                <View style={styles.quickActionsInner}>
-                    <View style={styles.quickActionsGrid}>
-                        {[
-                            { id: "apply", label: "Apply", icon: "👤" },
-                            { id: "cash", label: "Cash flow", icon: "⏱️" },
-                            { id: "transfer", label: "Transfer", icon: "↗️" },
-                            { id: "cards", label: "Cards", icon: "💳" },
-                        ].map((action) => (
-                            <TouchableOpacity key={action.id} style={styles.actionCard} activeOpacity={0.7}>
-                                <View style={styles.actionIcon}>
-                                    <Text style={{ fontSize: 24 }}>{action.icon}</Text>
+            {isBusiness ? (
+                <AdminDashboardSection onSwitchToPersonal={() => setAccountMode("personal")} />
+            ) : (
+                <>
+                    {/* Quick Actions Card */}
+                    <View style={styles.quickActionsContainer}>
+                        <View style={styles.quickActionsInner}>
+                            <View style={styles.quickActionsGrid}>
+                                {[
+                                    { id: "apply", label: "Apply", icon: "👤" },
+                                    { id: "cash", label: "Cash flow", icon: "⏱️" },
+                                    { id: "transfer", label: "Transfer", icon: "↗️" },
+                                    { id: "cards", label: "Cards", icon: "💳" },
+                                ].map((action) => (
+                                    <TouchableOpacity key={action.id} style={styles.actionCard} activeOpacity={0.7}>
+                                        <View style={styles.actionIcon}>
+                                            <Text style={{ fontSize: 24 }}>{action.icon}</Text>
+                                        </View>
+                                        <Text style={styles.actionLabel}>{action.label}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </View>
+
+                    {/* Allowance Wallets Section */}
+                    <View style={styles.allowanceContainer}>
+                        <View style={styles.allowanceCardInner}>
+                            <View style={styles.allowanceHeader}>
+                                <View style={styles.allowanceTitle}>
+                                    <View style={styles.allowanceTitleIcon}>
+                                        <Text style={{ fontSize: 20, color: "#fff" }}>💰</Text>
+                                    </View>
+                                    <View>
+                                        <Text style={styles.allowanceTitleText}>Allowance Wallets</Text>
+                                        <Text style={styles.allowanceSubtext}>Total RM 935.00 available</Text>
+                                    </View>
                                 </View>
-                                <Text style={styles.actionLabel}>{action.label}</Text>
+                                <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/allowance_wallet')}>
+                                    <Text style={styles.viewAllText}>View All →</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <AllowanceItem
+                                icon="🏥"
+                                title="Medical"
+                                amount="RM 450.00"
+                                used="RM 150"
+                                total="RM 600"
+                                percentage={25}
+                            />
+                            <AllowanceItem
+                                icon="💪"
+                                title="Gym / Wellness"
+                                amount="RM 180.00"
+                                used="RM 120"
+                                total="RM 300"
+                                percentage={40}
+                            />
+                            <AllowanceItem
+                                icon="🍽️"
+                                title="Meals"
+                                amount="RM 220.00"
+                                used="RM 280"
+                                total="RM 500"
+                                percentage={56}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Feature Cards */}
+                    <View style={styles.featureGridContainer}>
+                        <View style={styles.featureGridRow}>
+                            <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#FFFDE7" }]} activeOpacity={0.7}>
+                                <View style={[styles.featureIcon, { backgroundColor: "#FFF9C4" }]}>
+                                    <Text>🌱</Text>
+                                </View>
+                                <View style={styles.featureContent}>
+                                    <Text style={styles.featureTitle}>Grow Money</Text>
+                                    <Text style={styles.featureSubtitle}>Start with RM10</Text>
+                                </View>
                             </TouchableOpacity>
-                        ))}
+
+                            <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#E8EAF6" }]} activeOpacity={0.7}>
+                                <View style={[styles.featureIcon, { backgroundColor: "#C5CAE9" }]}>
+                                    <Text>💱</Text>
+                                </View>
+                                <View style={styles.featureContent}>
+                                    <Text style={styles.featureTitle}>BUDI95</Text>
+                                    <Text style={styles.featureSubtitle}>RON95 at RM1.99</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.featureGridRow}>
+                            <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#FFFDE7" }]} activeOpacity={0.7}>
+                                <View style={[styles.featureIcon, { backgroundColor: "#FFF9C4" }]}>
+                                    <Text>🎁</Text>
+                                </View>
+                                <View style={styles.featureContent}>
+                                    <Text style={styles.featureTitle}>GOrewards</Text>
+                                    <Text style={styles.pointsText}>864 pts</Text>
+                                    <Text style={styles.newBadge}>NEW</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#E3F2FD" }]} activeOpacity={0.7}>
+                                <View style={[styles.featureIcon, { backgroundColor: "#BBDEFB" }]}>
+                                    <Text>⛽</Text>
+                                </View>
+                                <View style={styles.featureContent}>
+                                    <Text style={styles.featureTitle}>Fuel Balance</Text>
+                                    <Text style={styles.featureSubtitle}>184 litres</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </View>
-
-            {/* Allowance Wallets Section */}
-            <View style={styles.allowanceContainer}>
-                <View style={styles.allowanceCardInner}>
-                    <View style={styles.allowanceHeader}>
-                        <View style={styles.allowanceTitle}>
-                            <View style={styles.allowanceTitleIcon}>
-                                <Text style={{ fontSize: 20, color: "#fff" }}>💰</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.allowanceTitleText}>Allowance Wallets</Text>
-                                <Text style={styles.allowanceSubtext}>Total RM 935.00 available</Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => router.push('/allowance_wallet')}
-                        >
-                            <Text style={styles.viewAllText}>View All →</Text>
-
-                        </TouchableOpacity>
-                    </View>
-
-                    <AllowanceItem
-                        icon="🏥"
-                        title="Medical"
-                        amount="RM 450.00"
-                        used="RM 150"
-                        total="RM 600"
-                        percentage={25}
-                    />
-                    <AllowanceItem
-                        icon="💪"
-                        title="Gym / Wellness"
-                        amount="RM 180.00"
-                        used="RM 120"
-                        total="RM 300"
-                        percentage={40}
-                    />
-                    <AllowanceItem
-                        icon="🍽️"
-                        title="Meals"
-                        amount="RM 220.00"
-                        used="RM 280"
-                        total="RM 500"
-                        percentage={56}
-                    />
-                </View>
-            </View>
-
-            {/* Feature Cards */}
-            <View style={styles.featureGridContainer}>
-                {/* Row 1 */}
-                <View style={styles.featureGridRow}>
-                    <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#FFFDE7" }]} activeOpacity={0.7}>
-                        <View style={[styles.featureIcon, { backgroundColor: "#FFF9C4" }]}>
-                            <Text>🌱</Text>
-                        </View>
-                        <View style={styles.featureContent}>
-                            <Text style={styles.featureTitle}>Grow Money</Text>
-                            <Text style={styles.featureSubtitle}>Start with RM10</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#E8EAF6" }]} activeOpacity={0.7}>
-                        <View style={[styles.featureIcon, { backgroundColor: "#C5CAE9" }]}>
-                            <Text>💱</Text>
-                        </View>
-                        <View style={styles.featureContent}>
-                            <Text style={styles.featureTitle}>BUDI95</Text>
-                            <Text style={styles.featureSubtitle}>RON95 at RM1.99</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Row 2 */}
-                <View style={styles.featureGridRow}>
-                    <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#FFFDE7" }]} activeOpacity={0.7}>
-                        <View style={[styles.featureIcon, { backgroundColor: "#FFF9C4" }]}>
-                            <Text>🎁</Text>
-                        </View>
-                        <View style={styles.featureContent}>
-                            <Text style={styles.featureTitle}>GOrewards</Text>
-                            <Text style={styles.pointsText}>864 pts</Text>
-                            <Text style={styles.newBadge}>NEW</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.featureCard, { backgroundColor: "#E3F2FD" }]} activeOpacity={0.7}>
-                        <View style={[styles.featureIcon, { backgroundColor: "#BBDEFB" }]}>
-                            <Text>⛽</Text>
-                        </View>
-                        <View style={styles.featureContent}>
-                            <Text style={styles.featureTitle}>Fuel Balance</Text>
-                            <Text style={styles.featureSubtitle}>184 litres</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
+                </>
+            )}
 
             {/* Extra padding for bottom nav */}
             <View style={styles.contentPadding} />
