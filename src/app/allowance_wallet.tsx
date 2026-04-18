@@ -364,7 +364,12 @@ export default function AllowanceWallets() {
                     {allowances.map((allowance) => (
                         <TouchableOpacity
                             key={allowance.id}
-                            // onPress={() => router.push(`/allowance/${allowance.id}`)}
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/allowance_details",
+                                    params: { type: allowance.id },
+                                })
+                            }
                             activeOpacity={0.7}
                         >
                             <View style={styles.allowanceCard}>

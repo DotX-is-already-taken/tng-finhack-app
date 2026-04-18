@@ -31,6 +31,9 @@ export default function AppTabs() {
           <TabTrigger name="allowance_wallet" href="/allowance_wallet" asChild>
             <TabButton>Wallets</TabButton>
           </TabTrigger>
+          <TabTrigger name="allowance_details" href="/allowance_details" asChild>
+            <TabButton>Details</TabButton>
+          </TabTrigger>
         </CustomTabList>
       </TabList>
     </Tabs>
