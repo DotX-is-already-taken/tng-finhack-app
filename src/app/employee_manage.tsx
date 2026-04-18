@@ -1,71 +1,20 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import styles from "@/styles/employee_manage";
+import employees from "@/mockData/employee_manage";
 
 export default function EmployeeManagement() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-
-  const employees = [
-    {
-      id: "1",
-      name: "Sarah Tan",
-      phone: "+60 12-345 6789",
-      avatar: "👩",
-      pools: [
-        { name: "Medical", emoji: "🏥", amount: "600", color: "red" },
-        { name: "Gym", emoji: "💪", amount: "300", color: "green" },
-        { name: "Meals", emoji: "🍽️", amount: "500", color: "orange" },
-      ],
-    },
-    {
-      id: "2",
-      name: "Ahmad Razak",
-      phone: "+60 12-456 7890",
-      avatar: "👨",
-      pools: [
-        { name: "Medical", emoji: "🏥", amount: "600", color: "red" },
-        { name: "Transport", emoji: "🚗", amount: "400", color: "blue" },
-      ],
-    },
-    {
-      id: "3",
-      name: "Mei Ling Wong",
-      phone: "+60 12-567 8901",
-      avatar: "👩",
-      pools: [
-        { name: "Medical", emoji: "🏥", amount: "600", color: "red" },
-        { name: "Gym", emoji: "💪", amount: "300", color: "green" },
-      ],
-    },
-    {
-      id: "4",
-      name: "Kumar Raj",
-      phone: "+60 12-678 9012",
-      avatar: "👨",
-      pools: [
-        { name: "Medical", emoji: "🏥", amount: "600", color: "red" },
-        { name: "Meals", emoji: "🍽️", amount: "500", color: "orange" },
-        { name: "Transport", emoji: "🚗", amount: "400", color: "blue" },
-      ],
-    },
-    {
-      id: "5",
-      name: "Nurul Aina",
-      phone: "+60 12-789 0123",
-      avatar: "👩",
-      pools: [{ name: "Medical", emoji: "🏥", amount: "600", color: "red" }],
-    },
-  ];
 
   const filteredEmployees = employees.filter(
     (emp) =>

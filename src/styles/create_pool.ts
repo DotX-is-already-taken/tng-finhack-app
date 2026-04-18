@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 80,
+    paddingBottom: 40,
   },
   card: {
     backgroundColor: "#fff",
@@ -215,4 +215,15 @@ const styles = StyleSheet.create({
 });
 
 
-export default styles;
+
+  const colorClasses: Record<string, { bg: string; border: string; iconBg: string }> = {
+    red: { bg: "#FFF0F0", border: "#FECACA", iconBg: "#FEE2E2" },
+    green: { bg: "#F0FDF4", border: "#BBF7D0", iconBg: "#DCFCE7" },
+    orange: { bg: "#FFF7ED", border: "#FED7AA", iconBg: "#FFEDD5" },
+    blue: { bg: "#EFF6FF", border: "#BFDBFE", iconBg: "#DBEAFE" },
+    purple: { bg: "#FAF5FF", border: "#E9D5FF", iconBg: "#F3E8FF" },
+    pink: { bg: "#FDF2F8", border: "#FBCFE8", iconBg: "#FCE7F3" },
+  };
+
+
+export { styles, colorClasses };

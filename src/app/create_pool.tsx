@@ -1,14 +1,15 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import styles from "@/styles/create_pool";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { styles, colorClasses } from "@/styles/create_pool";
+import categories from "@/mockData/create_pool";
 
 export default function CreatePool() {
   const router = useRouter();
@@ -17,27 +18,10 @@ export default function CreatePool() {
   const [monthlyAmount, setMonthlyAmount] = useState("");
   const [employeeCount, setEmployeeCount] = useState("");
 
-  const categories = [
-    { id: "medical", name: "Medical", emoji: "🏥", color: "red" },
-    { id: "gym", name: "Gym / Wellness", emoji: "💪", color: "green" },
-    { id: "meals", name: "Meals", emoji: "🍽️", color: "orange" },
-    { id: "transport", name: "Transport", emoji: "🚗", color: "blue" },
-    { id: "education", name: "Education", emoji: "📚", color: "purple" },
-    { id: "childcare", name: "Childcare", emoji: "👶", color: "pink" },
-  ];
+
 
   const handleCreate = () => {
-    // Navigate back to admin dashboard
     router.back();
-  };
-
-  const colorClasses: Record<string, { bg: string; border: string; iconBg: string }> = {
-    red: { bg: "#FFF0F0", border: "#FECACA", iconBg: "#FEE2E2" },
-    green: { bg: "#F0FDF4", border: "#BBF7D0", iconBg: "#DCFCE7" },
-    orange: { bg: "#FFF7ED", border: "#FED7AA", iconBg: "#FFEDD5" },
-    blue: { bg: "#EFF6FF", border: "#BFDBFE", iconBg: "#DBEAFE" },
-    purple: { bg: "#FAF5FF", border: "#E9D5FF", iconBg: "#F3E8FF" },
-    pink: { bg: "#FDF2F8", border: "#FBCFE8", iconBg: "#FCE7F3" },
   };
 
   const isFormValid = selectedCategory && poolName && monthlyAmount && employeeCount;

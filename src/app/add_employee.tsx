@@ -1,61 +1,23 @@
+import { employees, pools } from "@/mockData/add_employee";
+import { poolColorClasses, styles } from "@/styles/add_employee";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import styles from "@/styles/add_employee";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AddEmployee() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedPool, setSelectedPool] = useState("");
   const [customAmount, setCustomAmount] = useState("");
-
-  // Mock employee data
-  const employees = [
-    { id: "1", name: "Sarah Tan", phone: "+60 12-345 6789", avatar: "👩" },
-    { id: "2", name: "Ahmad Razak", phone: "+60 12-456 7890", avatar: "👨" },
-    { id: "3", name: "Mei Ling Wong", phone: "+60 12-567 8901", avatar: "👩" },
-    { id: "4", name: "Kumar Raj", phone: "+60 12-678 9012", avatar: "👨" },
-    { id: "5", name: "Nurul Aina", phone: "+60 12-789 0123", avatar: "👩" },
-  ];
-
-  const pools = [
-    {
-      id: "medical",
-      name: "Medical Allowance",
-      emoji: "🏥",
-      defaultAmount: "600",
-      color: "red",
-    },
-    {
-      id: "gym",
-      name: "Gym / Wellness",
-      emoji: "💪",
-      defaultAmount: "300",
-      color: "green",
-    },
-    {
-      id: "meals",
-      name: "Meals Allowance",
-      emoji: "🍽️",
-      defaultAmount: "500",
-      color: "orange",
-    },
-    {
-      id: "transport",
-      name: "Transport",
-      emoji: "🚗",
-      defaultAmount: "400",
-      color: "blue",
-    },
-  ];
 
   const filteredEmployees = employees.filter(
     (emp) =>
@@ -69,16 +31,9 @@ export default function AddEmployee() {
 
   const selectedPoolData = pools.find((p) => p.id === selectedPool);
 
-  const poolColorClasses: Record<string, { bg: string; border: string }> = {
-    red: { bg: "#FFF0F0", border: "#FECACA" },
-    green: { bg: "#F0FDF4", border: "#BBF7D0" },
-    orange: { bg: "#FFF7ED", border: "#FED7AA" },
-    blue: { bg: "#EFF6FF", border: "#BFDBFE" },
-  };
-
   return (
-    <SafeAreaView>
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -264,6 +219,6 @@ export default function AddEmployee() {
           <Text style={styles.createButtonText}>Add Employee to Pool</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

@@ -261,4 +261,13 @@ const styles = StyleSheet.create({
 });
 
 
-export default styles;
+
+const poolColorClasses: Record<string, { bg: string; border: string }> = {
+  red: { bg: "#FFF0F0", border: "#FECACA" },
+  green: { bg: "#F0FDF4", border: "#BBF7D0" },
+  orange: { bg: "#FFF7ED", border: "#FED7AA" },
+  blue: { bg: "#EFF6FF", border: "#BFDBFE" },
+};
+
+
+export {styles, poolColorClasses};
