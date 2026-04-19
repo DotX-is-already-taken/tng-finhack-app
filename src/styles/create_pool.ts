@@ -2,9 +2,13 @@ import { StyleSheet } from "react-native";
 
 
 const styles = StyleSheet.create({
-  container: {
+  safearea: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#1565C0",
+  },
+  container: {
+    flex:1,
+    backgroundColor: "#f5f5f5ff",
   },
   header: {
     backgroundColor: "#1565C0",
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   card: {
     backgroundColor: "#fff",

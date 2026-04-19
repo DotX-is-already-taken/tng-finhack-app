@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 40,
+    paddingBottom: 130,
   },
   searchCard: {
     backgroundColor: "#fff",

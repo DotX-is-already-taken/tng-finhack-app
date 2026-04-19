@@ -3,8 +3,8 @@ import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { AdminDashboardSection } from "./admin_dashboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AdminDashboardSection } from "./admin_dashboard";
 
 const AllowanceItem = ({
   icon,
@@ -117,13 +117,9 @@ export default function Home() {
 
           {/* Balance Section */}
           <View style={styles.balanceSection}>
-            <View style={styles.balanceIcon}>
-              <Text style={{ fontSize: 18, color: "#fff" }}>✓</Text>
-            </View>
             <Text style={styles.balanceText}>
               {isBusiness ? "RM 42,860" : "RM 0.30"}
             </Text>
-            <Text style={styles.balanceEye}>👁️</Text>
           </View>
 
           {/* View Details */}
@@ -143,9 +139,9 @@ export default function Home() {
                 {isBusiness ? "Top up company" : "Add money"}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity style={styles.viewDetailsButton} activeOpacity={0.7}>
               <Text style={styles.viewDetailsText}>
-                {isBusiness ? "Approvals →" : "Transactions →"}
+                {isBusiness ? "Approvals" : "Transactions"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -304,7 +300,6 @@ export default function Home() {
           </>
         )}
 
-        {/* Extra padding for bottom nav */}
         <View style={styles.contentPadding} />
       </ScrollView>
     </View>

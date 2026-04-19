@@ -2,10 +2,6 @@ import { StyleSheet } from "react-native";
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-  },
   header: {
     backgroundColor: "#1565C0",
     paddingHorizontal: 16,
@@ -33,7 +29,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 80,
+    paddingBottom: 120,
     backgroundColor: "#F9FAFB",
   },
   card: {
@@ -259,7 +255,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
 
 
 const poolColorClasses: Record<string, { bg: string; border: string }> = {

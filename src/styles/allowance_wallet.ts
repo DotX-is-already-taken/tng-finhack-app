@@ -8,12 +8,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#1565C0',
         paddingHorizontal: 16,
-        paddingVertical: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 4,
+        paddingVertical: 18,
     },
     headerTop: {
         flexDirection: 'row',

@@ -13,18 +13,19 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   statsHeaderCard: {
-    backgroundColor: "#1565C0",
+    backgroundColor: "#fff",
+    marginTop: -24,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
   },
   statsLabel: {
-    color: "#D2E7FF",
+    color: "#303841ff",
     fontSize: 12,
     marginBottom: 4,
   },
   statsValue: {
-    color: "#fff",
+    color: "#373c41ff",
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 12,
@@ -35,19 +36,20 @@ const styles = StyleSheet.create({
   },
   statsMiniCard: {
     flex: 1,
-    backgroundColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(205, 205, 205, 0.61)",
     borderRadius: 10,
     padding: 10,
   },
   statsMiniLabel: {
-    color: "#D2E7FF",
+    color: "#5d5e5eff",
     fontSize: 11,
   },
   statsMiniValue: {
-    color: "#fff",
+    color: "#1e252dff",
     fontSize: 20,
     fontWeight: "700",
     marginTop: 2,
+    opacity:0.8
   },
   card: {
     backgroundColor: "#fff",
@@ -208,6 +210,5 @@ const styles = StyleSheet.create({
     color: "#1976D2",
   },
 });
-
 
 export default styles;

@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F7FA",
     },
     header: {
-        backgroundColor: "#1976D2",
+        backgroundColor: "#1565C0",
         paddingHorizontal: 16,
         paddingBottom: 16,
     },

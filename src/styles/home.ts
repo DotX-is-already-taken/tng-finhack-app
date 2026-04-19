@@ -108,15 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
-  },
-  balanceIcon: {
-    width: 36,
-    height: 36,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
+    marginTop: 10,
   },
   balanceText: {
     fontSize: 32,
@@ -125,22 +117,25 @@ const styles = StyleSheet.create({
     marginRight: 10,
     letterSpacing: -0.5,
   },
-  balanceEye: {
-    fontSize: 18,
-    color: "#fff",
-    opacity: 0.9,
-  },
   viewDetailsText: {
     color: "rgba(255,255,255,0.85)",
     fontSize: 13,
-    marginBottom: 16,
+    marginBottom: 5,
     fontWeight: "500",
     letterSpacing: 0.2,
   },
   actionButtons: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 8,
+    marginTop: 20,
+  },
+  viewDetailsButton: {
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   outlineButton: {
     borderWidth: 2,
@@ -385,7 +380,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   contentPadding: {
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
 });
 
