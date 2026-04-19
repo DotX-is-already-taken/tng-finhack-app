@@ -30,12 +30,7 @@ export default function EmployeeManagement() {
       <View style={globalStyles.container}>
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={styles.iconButton}
-            >
-              <Text style={styles.iconButtonText}>{"\u276E"}</Text>
-            </TouchableOpacity>
+
             <Text style={styles.headerTitle}>Employee Management</Text>
             <TouchableOpacity
               onPress={() => router.push("/add_employee")}

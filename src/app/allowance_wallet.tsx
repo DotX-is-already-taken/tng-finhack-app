@@ -21,8 +21,11 @@ export default function AllowanceWallets() {
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={styles.headerTop}>
-            <TouchableOpacity onPress={() => router.back()}>
-              {/*<ChevronLeft color="#fff" size={24} />*/}
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.iconButton}
+            >
+              <Text style={styles.iconButtonText}>{"\u276E"}</Text>
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Allowance Wallets</Text>
           </View>

@@ -91,11 +91,6 @@ export default function AddEmployee() {
                           {employee.phone}
                         </Text>
                       </View>
-                      {isSelected && (
-                        <View style={styles.checkCircle}>
-                          <Text style={styles.checkIcon}>{"\u2714"}</Text>
-                        </View>
-                      )}
                     </TouchableOpacity>
                   );
                 })}
@@ -147,11 +142,6 @@ export default function AddEmployee() {
                         RM {pool.defaultAmount}/month
                       </Text>
                     </View>
-                    {isSelected && (
-                      <View style={styles.checkCircle}>
-                        <Text style={styles.checkIcon}>{"\u2714"}</Text>
-                      </View>
-                    )}
                   </TouchableOpacity>
                 );
               })}

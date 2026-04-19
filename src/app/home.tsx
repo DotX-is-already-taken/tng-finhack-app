@@ -1,3 +1,4 @@
+import { useAccount } from "@/context/AccountContext";
 import styles from "@/styles/home";
 import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
@@ -38,9 +39,7 @@ export default function Home() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const [accountMode, setAccountMode] = useState<"personal" | "business">(
-    "personal",
-  );
+  const { accountMode, setAccountMode } = useAccount();
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
 
   const isBusiness = accountMode === "business";

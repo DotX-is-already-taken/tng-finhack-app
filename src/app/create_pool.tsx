@@ -85,11 +85,6 @@ export default function CreatePool() {
                       >
                         <Text style={styles.catIcon}>{category.emoji}</Text>
                       </View>
-                      {isSelected && (
-                        <View style={styles.checkCircle}>
-                          <Text style={styles.checkIcon}>{"\u2714"}</Text>
-                        </View>
-                      )}
                     </View>
                     <Text style={styles.catName}>{category.name}</Text>
                   </TouchableOpacity>

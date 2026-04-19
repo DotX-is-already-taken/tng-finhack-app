@@ -28,14 +28,12 @@ export default function AllowanceDetailScreen() {
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.headerTopRow}>
           <TouchableOpacity
-            style={styles.backButton}
             onPress={() => router.back()}
-            activeOpacity={0.7}
+            style={styles.iconButton}
           >
-            <Text style={styles.backButtonText}>←</Text>
+            <Text style={styles.iconButtonText}>{"\u276E"}</Text>
           </TouchableOpacity>
           <View style={styles.headerTitleWrap}>
-            <Text style={styles.headerEmoji}>{allowance.icon}</Text>
             <Text style={styles.headerTitle}>{allowance.name}</Text>
           </View>
         </View>
