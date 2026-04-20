@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
   quickActionsGrid: {
     flexDirection: "row",
     gap: 10,
+    marginBottom: 10,
   },
   actionTile: {
     flex: 1,

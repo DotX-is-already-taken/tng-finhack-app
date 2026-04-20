@@ -1,20 +1,14 @@
+import { activities, pools } from "@/mockData/admin_dashboard";
+import styles from "@/styles/admin_dashboard";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import styles from "@/styles/admin_dashboard";
-import { pools, activities } from "@/mockData/admin_dashboard";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 type AdminDashboardSectionProps = {
   onSwitchToPersonal?: () => void;
 };
 
-export function AdminDashboardSection({
-}: Readonly<AdminDashboardSectionProps>) {
+export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) {
   const router = useRouter();
 
   return (
@@ -43,8 +37,8 @@ export function AdminDashboardSection({
             onPress={() => router.push("/create_pool")}
           >
             <Text style={styles.actionEmoji}>➕</Text>
-            <Text style={styles.actionTitle}>Create Pool</Text>
-            <Text style={styles.actionSub}>Set up new allowance</Text>
+            <Text style={styles.actionTitle}>Create Master Policy</Text>
+            <Text style={styles.actionSub}>Set up new master policy</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionTile, { backgroundColor: "#F3EEFF" }]}
@@ -56,13 +50,35 @@ export function AdminDashboardSection({
             <Text style={styles.actionSub}>Assign to pool</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.quickActionsGrid}>
+          <TouchableOpacity
+            style={[styles.actionTile, { backgroundColor: "#EDF4FF" }]}
+            activeOpacity={0.8}
+            onPress={() => router.push("/create_pool")}
+          >
+            <Text style={styles.actionEmoji}>➕</Text>
+            <Text style={styles.actionTitle}>Create Policy Group</Text>
+            <Text style={styles.actionSub}>Set up new policy group</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionTile, { backgroundColor: "#F3EEFF" }]}
+            activeOpacity={0.8}
+            onPress={() => router.push("/add_employee")}
+          >
+            <Text style={styles.actionEmoji}>👥</Text>
+            <Text style={styles.actionTitle}>Create Pool</Text>
+            <Text style={styles.actionSub}>Set up new pool</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.card}>
         <View style={styles.cardHeaderRow}>
           <Text style={styles.cardTitle}>Active Pools</Text>
-          <TouchableOpacity activeOpacity={0.7}
-          onPress={() => router.push("/allowance_details")}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push("/allowance_details")}
           >
             <Text style={styles.linkText}>View All</Text>
           </TouchableOpacity>

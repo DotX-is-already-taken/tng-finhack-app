@@ -4,7 +4,7 @@
     { id: "meals", name: "Meals", emoji: "🍽️", color: "orange" },
     { id: "transport", name: "Transport", emoji: "🚗", color: "blue" },
     { id: "education", name: "Education", emoji: "📚", color: "purple" },
-    { id: "childcare", name: "Childcare", emoji: "👶", color: "pink" },
+    { id: "other", name: "Other", emoji: "🧩", color: "pink" },
   ];
 
 

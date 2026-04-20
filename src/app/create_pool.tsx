@@ -93,15 +93,15 @@ export default function CreatePool() {
             </View>
           </View>
 
-          {/* Step 2: Pool Details */}
+          {/* Step 2: Policy Details */}
           <View style={styles.card}>
-            <Text style={styles.stepTitle}>Step 2: Pool Details</Text>
+            <Text style={styles.stepTitle}>Step 2: Policy Details</Text>
             <Text style={styles.stepSubtitle}>
-              Configure allowance settings
+              Configure policy settings
             </Text>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Pool Name</Text>
+              <Text style={styles.inputLabel}>Policy Name</Text>
               <TextInput
                 style={styles.input}
                 placeholder="e.g. Medical Allowance 2026"
@@ -112,7 +112,7 @@ export default function CreatePool() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Monthly Amount per Employee</Text>
+              <Text style={styles.inputLabel}>Maximum Amount per User</Text>
               <View style={styles.amountInputContainer}>
                 <Text style={styles.currencyLabel}>RM</Text>
                 <TextInput
@@ -125,22 +125,7 @@ export default function CreatePool() {
                 />
               </View>
               <Text style={styles.helperText}>
-                This amount will be allocated to each employee monthly
-              </Text>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Initial Number of Employees</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                placeholder="24"
-                value={employeeCount}
-                onChangeText={setEmployeeCount}
-                placeholderTextColor="#9CA3AF"
-              />
-              <Text style={styles.helperText}>
-                You can add more employees later
+                User cannot beyond this amount for the policy
               </Text>
             </View>
           </View>
