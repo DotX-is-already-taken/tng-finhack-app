@@ -34,7 +34,7 @@ export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) 
           <TouchableOpacity
             style={[styles.actionTile, { backgroundColor: "#EDF4FF" }]}
             activeOpacity={0.8}
-            onPress={() => router.push("/create_pool")}
+            onPress={() => router.push("/create_master_policy")}
           >
             <Text style={styles.actionEmoji}>➕</Text>
             <Text style={styles.actionTitle}>Create Master Policy</Text>
@@ -55,7 +55,7 @@ export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) 
           <TouchableOpacity
             style={[styles.actionTile, { backgroundColor: "#EDF4FF" }]}
             activeOpacity={0.8}
-            onPress={() => router.push("/create_pool")}
+            onPress={() => router.push("/create_policy_group")}
           >
             <Text style={styles.actionEmoji}>➕</Text>
             <Text style={styles.actionTitle}>Create Policy Group</Text>

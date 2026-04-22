@@ -1,8 +1,9 @@
-import categories from "@/mockData/create_pool";
+import categories from "@/mockData/create_policy";
+import masterPolicies from "@/mockData/master_policy";
 import { colorClasses, styles } from "@/styles/create_pool";
 import globalStyles from "@/styles/global";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -12,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function CreatePool() {
+export default function CreatePolicyGroup() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [poolName, setPoolName] = useState("");
@@ -20,6 +21,12 @@ export default function CreatePool() {
   const [employeeCount, setEmployeeCount] = useState("");
 
   const insets = useSafeAreaInsets();
+  const data = useRef({
+    id: "",
+    name: "",
+    emoji: "",
+    color: "",
+  });
 
   const handleCreate = () => {
     router.back();
@@ -27,6 +34,19 @@ export default function CreatePool() {
 
   const isFormValid =
     selectedCategory && poolName && monthlyAmount && employeeCount;
+
+  function getCategoriesForMasterPolicy(categoryId: string) {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (category) {
+      data.current = {
+        id: categoryId,
+        name: category.name,
+        emoji: category.emoji,
+        color: category.color,
+      };
+    }
+    return data.current;
+  }
 
   return (
     <View style={{ ...globalStyles.safearea, paddingTop: insets.top }}>
@@ -39,7 +59,7 @@ export default function CreatePool() {
             >
               <Text style={styles.backButtonText}>{"\u276E"}</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Create Allowance Pool</Text>
+            <Text style={styles.headerTitle}>Create Pool</Text>
             <View style={{ width: 24 }} />
           </View>
         </View>
@@ -49,18 +69,21 @@ export default function CreatePool() {
           <View style={styles.card}>
             <Text style={styles.stepTitle}>Step 1: Select Category</Text>
             <Text style={styles.stepSubtitle}>
-              Choose the type of allowance
+              Choose the type of Pool
             </Text>
 
             <View style={styles.grid}>
-              {categories.map((category) => {
-                const colors = colorClasses[category.color];
-                const isSelected = selectedCategory === category.id;
+              {masterPolicies.map((policy) => {
+                const colors =
+                  colorClasses[
+                    getCategoriesForMasterPolicy(policy.category_id).color
+                  ];
+                const isSelected = selectedCategory === policy.id;
 
                 return (
                   <TouchableOpacity
-                    key={category.id}
-                    onPress={() => setSelectedCategory(category.id)}
+                    key={policy.id}
+                    onPress={() => setSelectedCategory(policy.id)}
                     style={[
                       styles.categoryBtn,
                       { backgroundColor: colors.bg },
@@ -83,10 +106,15 @@ export default function CreatePool() {
                           { backgroundColor: colors.iconBg },
                         ]}
                       >
-                        <Text style={styles.catIcon}>{category.emoji}</Text>
+                        <Text style={styles.catIcon}>
+                          {
+                            getCategoriesForMasterPolicy(policy.category_id)
+                              .emoji
+                          }
+                        </Text>
                       </View>
                     </View>
-                    <Text style={styles.catName}>{category.name}</Text>
+                    <Text style={styles.catName}>{policy.name}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -95,21 +123,9 @@ export default function CreatePool() {
 
           {/* Step 2: Policy Details */}
           <View style={styles.card}>
-            <Text style={styles.stepTitle}>Step 2: Policy Details</Text>
-            <Text style={styles.stepSubtitle}>
-              Configure policy settings
-            </Text>
+            <Text style={styles.stepTitle}>Step 2: Policy Amount</Text>
+            <Text style={styles.stepSubtitle}>Configure policy settings</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Policy Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Medical Allowance 2026"
-                value={poolName}
-                onChangeText={setPoolName}
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Maximum Amount per User</Text>
