@@ -1,0 +1,180 @@
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width } = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#1565C0", // TNG Blue
+  },
+  topSection: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 70,
+    paddingBottom: 30,
+  },
+  logoContainer: {
+    width: 90,
+    height: 90,
+    backgroundColor: "#fff",
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 10,
+    overflow: "hidden",
+  },
+  logoImage: {
+    width: "70%",
+    height: "70%",
+  },
+  welcomeText: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 6,
+    letterSpacing: 0.5,
+  },
+  subtitleText: {
+    fontSize: 15,
+    color: "rgba(255, 255, 255, 0.85)",
+    fontWeight: "500",
+  },
+  formSection: {
+    flex: 2.2,
+    backgroundColor: "#F9FAFB",
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingHorizontal: 24,
+    paddingTop: 36,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#4B5563",
+    marginBottom: 8,
+    marginLeft: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: "#E5E7EB",
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    height: 58,
+  },
+  inputIcon: {
+    fontSize: 18,
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#1F2937",
+    fontWeight: "500",
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 28,
+  },
+  forgotPasswordText: {
+    color: "#1565C0",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  loginButton: {
+    backgroundColor: "#1565C0",
+    borderRadius: 16,
+    height: 58,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#1565C0",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  loginButtonDisabled: {
+    backgroundColor: "#93B1D9",
+    shadowOpacity: 0.1,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E5E7EB",
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    color: "#9CA3AF",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  faceIdButton: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: "#E5E7EB",
+    borderRadius: 16,
+    height: 58,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  faceIdIcon: {
+    fontSize: 22,
+    marginRight: 10,
+  },
+  faceIdText: {
+    color: "#4B5563",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "auto",
+    paddingBottom: 40,
+    paddingTop: 20,
+  },
+  footerText: {
+    color: "#6B7280",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  signUpText: {
+    color: "#1565C0",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+});
+
+export default styles;

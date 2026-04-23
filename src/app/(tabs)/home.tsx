@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AdminDashboardSection } from "./admin_dashboard";
+import { AdminDashboardSection } from "../admin_dashboard";
 
 const AllowanceItem = ({
   icon,
@@ -138,7 +138,10 @@ export default function Home() {
                 {isBusiness ? "Top up company" : "Add money"}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.viewDetailsButton} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.viewDetailsButton}
+              activeOpacity={0.7}
+            >
               <Text style={styles.viewDetailsText}>
                 {isBusiness ? "Approvals" : "Transactions"}
               </Text>

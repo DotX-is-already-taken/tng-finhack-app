@@ -33,7 +33,7 @@ export default function EmployeeManagement() {
 
             <Text style={styles.headerTitle}>Employee Management</Text>
             <TouchableOpacity
-              onPress={() => router.push("/add_employee")}
+              onPress={() => router.push("/add_employee_company")}
               style={styles.iconButton}
             >
               <Text style={styles.iconButtonText}>{"\u2795"}</Text>
