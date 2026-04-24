@@ -1,3 +1,4 @@
+import { getUserPool } from "@/api/getPool";
 import allowances from "@/mockData/allowance_details";
 import styles from "@/styles/allowance_wallet";
 import globalstyle from "@/styles/global";
@@ -15,6 +16,26 @@ const getStatusColor = (status: string): string => {
 export default function AllowanceWallets() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  async function getPool(user_tenant_id: "33333333-3333-3333-3333-333333333333",) {
+    await getUserPool(user_tenant_id)
+      .then((pool) => {
+        console.log("User's pool data:", pool);
+      })
+      .catch((error) => {
+        console.error("Error fetching user's pool:", error);
+      });
+  }
+
+  async function getPolicyGroups(pool_id: string) {
+    await getPolicyGroups(pool_id)
+      .then((policyGroups) => {
+        console.log("Policy groups:", policyGroups);
+      })
+      .catch((error) => {
+        console.error("Error fetching policy groups:", error);
+      });
+  };
 
   return (
     <View style={[globalstyle.safearea, { paddingTop: insets.top }]}>

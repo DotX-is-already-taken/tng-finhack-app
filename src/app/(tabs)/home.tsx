@@ -40,6 +40,7 @@ export default function Home() {
   const insets = useSafeAreaInsets();
 
   const { accountMode, setAccountMode } = useAccount();
+  const { userData } = useAccount();
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
 
   const isBusiness = accountMode === "business";
@@ -84,7 +85,7 @@ export default function Home() {
                     }}
                   >
                     <Text style={styles.switcherOptionLabel}>
-                      Personal Account
+                      {userData?.full_name || "Personal"}
                     </Text>
                     <Text style={styles.switcherOptionSub}>
                       Current wallet and rewards

@@ -1,7 +1,6 @@
 import styles from "@/styles/login_page";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,20 +12,18 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { useLogin } from "../hooks/useLogin";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      router.replace("/(tabs)/home");
-    }, 1500);
-  };
+  const {
+    phone,
+    password,
+    authError,
+    isLoading,
+    handleLogin,
+    handlePhoneChange,
+    handlePasswordChange,
+  } = useLogin();
 
   return (
     <KeyboardAvoidingView
@@ -72,14 +69,19 @@ export default function LoginPage() {
         >
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Account Email / Phone</Text>
-            <View style={styles.inputWrapper}>
+            <View
+              style={[
+                styles.inputWrapper,
+                authError && styles.inputWrapperError,
+              ]}
+            >
               <Text style={styles.inputIcon}>👤</Text>
               <TextInput
                 style={styles.input}
                 placeholder="example@tng.com"
                 placeholderTextColor="#9CA3AF"
-                value={email}
-                onChangeText={setEmail}
+                value={phone}
+                onChangeText={handlePhoneChange}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -88,18 +90,29 @@ export default function LoginPage() {
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>6-Digit PIN / Password</Text>
-            <View style={styles.inputWrapper}>
+            <View
+              style={[
+                styles.inputWrapper,
+                authError && styles.inputWrapperError,
+              ]}
+            >
               <Text style={styles.inputIcon}>🔒</Text>
               <TextInput
                 style={styles.input}
                 placeholder="••••••"
                 placeholderTextColor="#9CA3AF"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={handlePasswordChange}
                 secureTextEntry
               />
             </View>
           </View>
+
+          {authError && (
+            <Text style={styles.errorMessage}>
+              ⚠️ Phone number or password is wrong
+            </Text>
+          )}
 
           <TouchableOpacity style={styles.forgotPassword} activeOpacity={0.7}>
             <Text style={styles.forgotPasswordText}>Forgot login details?</Text>
