@@ -24,6 +24,15 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
+      {accountMode === "personal" && (
+        <NativeTabs.Trigger name="employee_manage">
+          <NativeTabs.Trigger.Label>Manage</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require("@/assets/images/tabIcons/explore.png")}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      )}
 
       {accountMode === "business" && (
         <NativeTabs.Trigger name="employee_manage">
