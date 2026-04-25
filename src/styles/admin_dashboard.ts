@@ -49,13 +49,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginTop: 2,
-    opacity:0.8
+    opacity: 0.8,
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 14,
     padding: 12,
     marginBottom: 12,
+  },
+  pool_card: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+    maxHeight: 500,
   },
   cardTitle: {
     color: "#1A1A1A",
@@ -98,11 +105,16 @@ const styles = StyleSheet.create({
     color: "#607D8B",
     marginTop: 2,
   },
-  poolCard: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 10,
-    marginBottom: 8,
+  poolCardItem: {
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1.5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   poolTopRow: {
     flexDirection: "row",

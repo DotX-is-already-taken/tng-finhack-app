@@ -53,6 +53,15 @@ interface UserAllowanceSummary {
   ];
 }
 
+interface TenantOverview {
+  active_employee_count: number;
+  active_policy_count: number;
+  active_pool_count: number;
+  currency: string;
+  tenant_id: string;
+  total_allowance_allocated: number;
+}
+
 interface AccountContextType {
   accountMode: AccountMode;
   setAccountMode: (mode: AccountMode) => void;
@@ -60,10 +69,20 @@ interface AccountContextType {
   userData: UserData | null;
   userTenants: UserTenantData | null;
   userAllowanceSummary: UserAllowanceSummary | null;
+  tenantOverview: TenantOverview | null;
+  tenantPolicies: any[] | null;
+  tenantPools: any[] | null;
+  tenantPoliciesList: any[] | null;
+  selectedAllowanceDetails: any | null;
   setAuthData: (data: AuthData) => void;
   setUserData: (data: UserData) => void;
   setUserTenants: (data: UserTenantData) => void;
   setUserAllowanceSummary: (data: UserAllowanceSummary) => void;
+  setTenantOverview: (data: TenantOverview) => void;
+  setTenantPolicies: (data: any[]) => void;
+  setTenantPools: (data: any[]) => void;
+  setTenantPoliciesList: (data: any[]) => void;
+  setSelectedAllowanceDetails: (data: any) => void;
   clearAuthData: () => void;
   clearAllowanceSummary: () => void;
 }
@@ -77,12 +96,22 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   const [userTenants, setUserTenants] = useState<UserTenantData | null>(null);
   const [userAllowanceSummary, setUserAllowanceSummary] =
     useState<UserAllowanceSummary | null>(null);
+  const [tenantOverview, setTenantOverview] = useState<TenantOverview | null>(null);
+  const [tenantPolicies, setTenantPolicies] = useState<any[] | null>(null);
+  const [tenantPools, setTenantPools] = useState<any[] | null>(null);
+  const [tenantPoliciesList, setTenantPoliciesList] = useState<any[] | null>(null);
+  const [selectedAllowanceDetails, setSelectedAllowanceDetails] = useState<any | null>(null);
 
   const clearAuthData = () => {
     setAuthData(null);
     setUserData(null);
     setUserTenants(null);
     setUserAllowanceSummary(null);
+    setTenantOverview(null);
+    setTenantPolicies(null);
+    setTenantPools(null);
+    setTenantPoliciesList(null);
+    setSelectedAllowanceDetails(null);
   };
 
   const clearAllowanceSummary = () => {
@@ -103,6 +132,16 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
         setUserTenants,
         userAllowanceSummary,
         setUserAllowanceSummary,
+        tenantOverview,
+        setTenantOverview,
+        tenantPolicies,
+        setTenantPolicies,
+        tenantPools,
+        setTenantPools,
+        tenantPoliciesList,
+        setTenantPoliciesList,
+        selectedAllowanceDetails,
+        setSelectedAllowanceDetails,
         clearAllowanceSummary,
       }}
     >

@@ -12,41 +12,38 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAccount } from "@/context/AccountContext";
+
+const categoryUIMap: Record<string, { icon: string; bg: string; border: string; iconBg: string }> = {
+  medical: { icon: "🏥", bg: "#FDECEC", border: "#FBCACA", iconBg: "#FFEBEE" },
+  transport: { icon: "🚗", bg: "#ECF2FF", border: "#C5D8FF", iconBg: "#E3F2FD" },
+  meals: { icon: "🍽️", bg: "#FFF7E8", border: "#F9E0B0", iconBg: "#FFF8E1" },
+  accomodation: { icon: "🏨", bg: "#F5F3FF", border: "#DDD6FE", iconBg: "#F3E5F5" },
+  "gym/wellness": { icon: "💪", bg: "#ECFDF3", border: "#C5F2D8", iconBg: "#E8F5E9" },
+  "phone/internet": { icon: "📱", bg: "#F0F9FF", border: "#B9E6FE", iconBg: "#E1F5FE" },
+  others: { icon: "💰", bg: "#F9FAFB", border: "#E5E7EB", iconBg: "#F5F5F5" },
+};
 
 export default function CreatePolicyGroup() {
   const router = useRouter();
+  const { tenantPolicies } = useAccount();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [poolName, setPoolName] = useState("");
   const [monthlyAmount, setMonthlyAmount] = useState("");
   const [employeeCount, setEmployeeCount] = useState("");
 
   const insets = useSafeAreaInsets();
-  const data = useRef({
-    id: "",
-    name: "",
-    emoji: "",
-    color: "",
-  });
+
+  const selectedPolicyData = tenantPolicies?.find(p => p.id === selectedCategory);
+  const maxLimit = selectedPolicyData?.max_limit || 0;
+  const isOverLimit = parseFloat(monthlyAmount) > maxLimit;
 
   const handleCreate = () => {
     router.back();
   };
 
   const isFormValid =
-    selectedCategory && poolName && monthlyAmount && employeeCount;
-
-  function getCategoriesForMasterPolicy(categoryId: string) {
-    const category = categories.find((cat) => cat.id === categoryId);
-    if (category) {
-      data.current = {
-        id: categoryId,
-        name: category.name,
-        emoji: category.emoji,
-        color: category.color,
-      };
-    }
-    return data.current;
-  }
+    selectedCategory && poolName && monthlyAmount && employeeCount && !isOverLimit;
 
   return (
     <View style={{ ...globalStyles.safearea, paddingTop: insets.top }}>
@@ -59,7 +56,7 @@ export default function CreatePolicyGroup() {
             >
               <Text style={styles.backButtonText}>{"\u276E"}</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Create Pool</Text>
+            <Text style={styles.headerTitle}>Create Policy</Text>
             <View style={{ width: 24 }} />
           </View>
         </View>
@@ -71,11 +68,8 @@ export default function CreatePolicyGroup() {
             <Text style={styles.stepSubtitle}>Choose the type of Pool</Text>
 
             <View style={styles.grid}>
-              {masterPolicies.map((policy) => {
-                const colors =
-                  colorClasses[
-                    getCategoriesForMasterPolicy(policy.category_id).color
-                  ];
+              {(tenantPolicies || []).map((policy) => {
+                const ui = categoryUIMap[policy.id] || categoryUIMap.others;
                 const isSelected = selectedCategory === policy.id;
 
                 return (
@@ -84,9 +78,9 @@ export default function CreatePolicyGroup() {
                     onPress={() => setSelectedCategory(policy.id)}
                     style={[
                       styles.categoryBtn,
-                      { backgroundColor: colors.bg },
+                      { backgroundColor: ui.bg },
                       isSelected && {
-                        borderColor: colors.border,
+                        borderColor: ui.border,
                         borderWidth: 2,
                         transform: [{ scale: 1.02 }],
                       },
@@ -101,15 +95,10 @@ export default function CreatePolicyGroup() {
                       <View
                         style={[
                           styles.catIconWrap,
-                          { backgroundColor: colors.iconBg },
+                          { backgroundColor: ui.iconBg },
                         ]}
                       >
-                        <Text style={styles.catIcon}>
-                          {
-                            getCategoriesForMasterPolicy(policy.category_id)
-                              .emoji
-                          }
-                        </Text>
+                        <Text style={styles.catIcon}>{ui.icon}</Text>
                       </View>
                     </View>
                     <Text style={styles.catName}>{policy.name}</Text>
@@ -141,7 +130,12 @@ export default function CreatePolicyGroup() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Maximum Amount per Policy</Text>
-              <View style={styles.amountInputContainer}>
+              <View
+                style={[
+                  styles.amountInputContainer,
+                  isOverLimit && { borderColor: "#EF4444", borderWidth: 1.5 },
+                ]}
+              >
                 <Text style={styles.currencyLabel}>RM</Text>
                 <TextInput
                   style={styles.amountInput}
@@ -152,9 +146,16 @@ export default function CreatePolicyGroup() {
                   placeholderTextColor="#9CA3AF"
                 />
               </View>
-              <Text style={styles.helperText}>
-                User cannot beyond this amount for the policy
-              </Text>
+              {isOverLimit ? (
+                <Text style={{ color: "#EF4444", fontSize: 11, marginTop: 4 }}>
+                  Maximum limit for this category is RM {maxLimit}. Please enter
+                  a lower value.
+                </Text>
+              ) : (
+                <Text style={styles.helperText}>
+                  User cannot go beyond this amount for the policy
+                </Text>
+              )}
             </View>
           </View>
 

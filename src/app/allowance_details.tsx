@@ -1,3 +1,4 @@
+import { useAccount } from "@/context/AccountContext";
 import allowanceData from "@/mockData/allowance_details";
 import styles from "@/styles/allowance_details";
 import { AllowanceType } from "@/types/allowance";
@@ -11,17 +12,36 @@ export default function AllowanceDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ type?: string | string[] }>();
   const insets = useSafeAreaInsets();
+  const { selectedAllowanceDetails } = useAccount();
+
+  // If we have selected details from context, use them. Otherwise fallback to mock.
+  const details = selectedAllowanceDetails;
 
   const typeValue = Array.isArray(params.type) ? params.type[0] : params.type;
   const resolvedType: AllowanceType = (
     typeValue && typeValue in allowanceData ? typeValue : "medical"
   ) as AllowanceType;
-  const allowance = allowanceData[resolvedType];
+  
+  const mockAllowance = allowanceData[resolvedType];
+
+  const name = details?.policy_group_name || mockAllowance.name;
+  const limit = details?.max_limit || mockAllowance.limit;
+  const transactions = details?.transactions || mockAllowance.transactions;
+  
+  const consumed = details 
+    ? (details.consumed_amount || 0)
+    : mockAllowance.used;
+    
+  const remaining = details
+    ? (details.remaining_amount || 0)
+    : mockAllowance.remaining;
+    
+  const progress = (consumed / limit) * 100;
 
   const daysElapsed = 15;
   const daysLeft = 13;
-  const dailySpend = allowance.used / daysElapsed;
-  const projectedBalance = allowance.remaining - dailySpend * daysLeft;
+  const dailySpend = consumed / daysElapsed;
+  const projectedBalance = remaining - dailySpend * daysLeft;
 
   return (
     <View style={styles.container}>
@@ -34,27 +54,27 @@ export default function AllowanceDetailScreen() {
             <Text style={styles.iconButtonText}>{"\u276E"}</Text>
           </TouchableOpacity>
           <View style={styles.headerTitleWrap}>
-            <Text style={styles.headerTitle}>{allowance.name}</Text>
+            <Text style={styles.headerTitle}>{name}</Text>
           </View>
         </View>
 
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Remaining Balance</Text>
           <Text style={styles.balanceValue}>
-            RM {allowance.remaining.toFixed(2)}
+            RM {remaining.toFixed(2)}
           </Text>
-          <Progress percent={allowance.progress} />
+          <Progress percent={progress} />
           <View style={styles.balanceMetaRow}>
             <View>
               <Text style={styles.metaLabel}>Used</Text>
               <Text style={styles.metaValue}>
-                RM {allowance.used.toFixed(2)}
+                RM {consumed.toFixed(2)}
               </Text>
             </View>
             <View style={styles.metaRight}>
               <Text style={styles.metaLabel}>Monthly Limit</Text>
               <Text style={styles.metaValue}>
-                RM {allowance.limit.toFixed(2)}
+                RM {limit.toFixed(2)}
               </Text>
             </View>
           </View>
@@ -83,7 +103,7 @@ export default function AllowanceDetailScreen() {
             <Text style={styles.statEmoji}>🎯</Text>
             <Text style={styles.statLabel}>Transactions</Text>
             <Text style={styles.statValue}>
-              {allowance.transactions.length}
+              {transactions.length}
             </Text>
           </View>
         </View>
@@ -94,7 +114,7 @@ export default function AllowanceDetailScreen() {
           <View style={styles.insightBox}>
             <Text style={styles.insightTitle}>💡 Spending Pace</Text>
             <Text style={styles.insightText}>
-              You are spending {allowance.progress > 50 ? "faster" : "slower"}{" "}
+              You are spending {progress > 50 ? "faster" : "slower"}{" "}
               than average. At this rate, expected month-end balance is RM{" "}
               {projectedBalance.toFixed(0)}.
             </Text>
@@ -104,8 +124,8 @@ export default function AllowanceDetailScreen() {
             <Text style={styles.insightTitle}>📈 Budget Range</Text>
             <Text style={styles.insightText}>
               Similar users typically spend RM{" "}
-              {(allowance.limit * 0.6).toFixed(0)} - RM{" "}
-              {(allowance.limit * 0.8).toFixed(0)}.
+              {(limit * 0.6).toFixed(0)} - RM{" "}
+              {(limit * 0.8).toFixed(0)}.
             </Text>
           </View>
 
@@ -124,25 +144,31 @@ export default function AllowanceDetailScreen() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Recent Transactions</Text>
-          {allowance.transactions.map((transaction, index) => (
-            <View
-              key={`${transaction.merchant}-${transaction.date}-${index}`}
-              style={[
-                styles.transactionRow,
-                index === allowance.transactions.length - 1 && styles.lastRow,
-              ]}
-            >
-              <View>
-                <Text style={styles.transactionMerchant}>
-                  {transaction.merchant}
+          {transactions.map((transaction: any, index: number) => {
+            const merchant = transaction.raw_vendor_name || transaction.merchant;
+            const date = transaction.created_at 
+              ? new Date(transaction.created_at).toLocaleDateString() 
+              : transaction.date;
+            const amount = transaction.amount;
+
+            return (
+              <View
+                key={`${merchant}-${date}-${index}`}
+                style={[
+                  styles.transactionRow,
+                  index === transactions.length - 1 && styles.lastRow,
+                ]}
+              >
+                <View>
+                  <Text style={styles.transactionMerchant}>{merchant}</Text>
+                  <Text style={styles.transactionDate}>{date}</Text>
+                </View>
+                <Text style={styles.transactionAmount}>
+                  -RM {amount.toFixed(2)}
                 </Text>
-                <Text style={styles.transactionDate}>{transaction.date}</Text>
               </View>
-              <Text style={styles.transactionAmount}>
-                -RM {transaction.amount.toFixed(2)}
-              </Text>
-            </View>
-          ))}
+            );
+          })}
 
           <TouchableOpacity activeOpacity={0.7} style={styles.ghostButton}>
             <Text style={styles.ghostButtonText}>View All Transactions</Text>

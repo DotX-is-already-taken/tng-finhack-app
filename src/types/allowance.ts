@@ -6,6 +6,19 @@ type Transaction = {
   amount: number;
 };
 
+interface Allowance {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  remaining: number;
+  limit: number;
+  used: number;
+  progress: number;
+  status: string;
+  transactions: Transaction[];
+}
+
 interface AllowanceDetails {
   user_tenant_id: string;
   policy_group_id: string;
@@ -13,6 +26,8 @@ interface AllowanceDetails {
   policy_group_description: string;
   policy_group_status: string;
   max_limit: number;
+  consumed_amount: number;
+  remaining_amount: number;
   transactions: [
     {
       payment_id: string;
@@ -53,5 +68,5 @@ const spendingCategories: Record<
   ],
 };
 export { spendingCategories };
-export type { AllowanceDetails, AllowanceType, Transaction };
+export type { Allowance, AllowanceDetails, AllowanceType, Transaction };
 

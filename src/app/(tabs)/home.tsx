@@ -1,9 +1,22 @@
+import {
+  getMasterPoliciesByTenantId,
+  getPoolsByTenantId,
+  getTenantByTenantId,
+  getTenantPoliciesByTenantId,
+} from "@/api/getTenant";
+import { getAllowanceSummary } from "@/api/getUserAllowance";
 import { useAccount } from "@/context/AccountContext";
 import styles from "@/styles/home";
 import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AdminDashboardSection } from "../admin_dashboard";
 
@@ -39,12 +52,117 @@ export default function Home() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const { accountMode, setAccountMode } = useAccount();
-  const { userData } = useAccount();
+  const {
+    accountMode,
+    setAccountMode,
+    userData,
+    userAllowanceSummary,
+    setUserAllowanceSummary,
+    clearAllowanceSummary,
+    authData,
+    userTenants,
+    setTenantOverview,
+    setTenantPolicies,
+    setTenantPools,
+    setTenantPoliciesList,
+  } = useAccount();
+
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
-  const { userAllowanceSummary } = useAccount();
+  const [isLoading, setIsLoading] = useState(false);
 
   const isBusiness = accountMode === "business";
+
+  const handleSwitchToBusiness = async () => {
+    setShowAccountSwitcher(false);
+    clearAllowanceSummary();
+    setIsLoading(true);
+
+    if (authData?.access_token && userTenants?.tenant_id) {
+      try {
+        const tenantData = await getTenantByTenantId(
+          authData.access_token,
+          userTenants.tenant_id,
+        );
+        setTenantOverview(tenantData);
+
+        const policiesData = await getMasterPoliciesByTenantId(
+          authData.access_token,
+          userTenants.tenant_id,
+        );
+
+        // Transform the object into an array for the dashboard
+        const policiesArray = Object.entries(policiesData)
+          .filter(([key, value]) => key !== "tenant_id" && value !== null)
+          .map(([key, value]: [string, any]) => ({
+            id: key,
+            name:
+              key.charAt(0).toUpperCase() + key.slice(1).replace("/", " / "),
+            ...value,
+          }));
+
+        setTenantPolicies(policiesArray);
+
+        const poolsData = await getPoolsByTenantId(
+          authData.access_token,
+          userTenants.tenant_id,
+        );
+        setTenantPools(poolsData?.items || []);
+
+        const policiesListData = await getTenantPoliciesByTenantId(
+          authData.access_token,
+          userTenants.tenant_id,
+        );
+
+        // Ensure we store an array
+        const finalPoliciesList = Array.isArray(policiesListData)
+          ? policiesListData
+          : policiesListData?.items ||
+            (policiesListData ? [policiesListData] : []);
+
+        setTenantPoliciesList(finalPoliciesList);
+      } catch (error) {
+        console.error("Failed to fetch tenant data:", error);
+      }
+    }
+
+    setAccountMode("business");
+    setIsLoading(false);
+  };
+
+  const handleSwitchToPersonal = async () => {
+    setShowAccountSwitcher(false);
+    setIsLoading(true);
+
+    if (authData?.access_token && userTenants?.user_tenant_id) {
+      try {
+        const summaryData = await getAllowanceSummary(
+          userTenants.user_tenant_id,
+          authData.access_token,
+        );
+        setUserAllowanceSummary(summaryData);
+      } catch (error) {
+        console.error("Failed to fetch allowance summary:", error);
+      }
+    }
+
+    setAccountMode("personal");
+    setIsLoading(false);
+  };
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
 
   return (
     <View style={{ ...styles.header, paddingTop: insets.top }}>
@@ -80,10 +198,7 @@ export default function Home() {
                       styles.switcherOption,
                       !isBusiness && styles.switcherOptionActive,
                     ]}
-                    onPress={() => {
-                      setAccountMode("personal");
-                      setShowAccountSwitcher(false);
-                    }}
+                    onPress={handleSwitchToPersonal}
                   >
                     <Text style={styles.switcherOptionLabel}>
                       {userData?.full_name || "Personal"}
@@ -99,10 +214,7 @@ export default function Home() {
                       styles.switcherOption,
                       isBusiness && styles.switcherOptionActive,
                     ]}
-                    onPress={() => {
-                      setAccountMode("business");
-                      setShowAccountSwitcher(false);
-                    }}
+                    onPress={handleSwitchToBusiness}
                   >
                     <Text style={styles.switcherOptionLabel}>
                       Business Admin

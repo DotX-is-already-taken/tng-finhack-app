@@ -6,7 +6,7 @@ import globalstyle from "@/styles/global";
 import { spendingCategories } from "@/types/allowance";
 import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
-import React, { useRef } from "react";
+import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,39 +18,11 @@ const getStatusFromPercentage = (percentage: number): string => {
   return percentage > 75 ? "Low balance" : "Available";
 };
 
-async function getAllowanceDetailsData(
-  policy_group_id: string,
-  accessToken: string,
-  user_tenant_id: string,
-) {
-  try {
-    const data = await getAllowanceDetails(
-      policy_group_id,
-      accessToken,
-      user_tenant_id,
-    );
-    return data;
-  } catch (error) {
-    console.error("Error fetching allowance details:", error);
-    throw error;
-  }
-}
-
 export default function AllowanceWallets() {
   const router = useRouter();
-
-  const data = useRef({
-    user_tenant_id: "",
-    policy_group_id: "",
-    policy_group_name: "",
-    policy_group_description: "",
-    policy_group_status: "",
-    max_limit: 0,
-    transactions: [],
-  });
+  const { authData, userAllowanceSummary, setSelectedAllowanceDetails } = useAccount();
 
   const insets = useSafeAreaInsets();
-  const { userAllowanceSummary, authData } = useAccount();
 
   const iconMap: { [key: number]: string } = {
     0: "✈️",
@@ -135,29 +107,9 @@ export default function AllowanceWallets() {
                 return (
                   <TouchableOpacity
                     key={allowance.policy_group_id}
-                    onPress={async () => {
-                      try {
-                        if (!authData?.access_token) {
-                          console.error("Access token not available");
-                          return;
-                        }
-                        data.current = await getAllowanceDetailsData(
-                          allowance.policy_group_id,
-                          authData.access_token,
-                          userAllowanceSummary.user_tenant_id,
-                        );
-                      } catch (error) {
-                        console.error(
-                          "Failed to fetch allowance details:",
-                          error,
-                        );
-                      }
-                      router.push({
-                        pathname: "/allowance_details",
-                        params: {
-                          data: JSON.stringify(data.current),
-                        },
-                      });
+                    onPress={() => {
+                      setSelectedAllowanceDetails(allowance);
+                      router.push("/allowance_details");
                     }}
                     activeOpacity={0.7}
                   >

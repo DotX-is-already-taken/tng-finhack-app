@@ -4,6 +4,7 @@ import { styles as masterStyles } from "@/styles/create_pool";
 import globalStyles from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useAccount } from "@/context/AccountContext";
 import {
   ScrollView,
   Text,
@@ -21,6 +22,18 @@ export default function CreatePool() {
   const [selectedPolicy, setSelectedPolicy] = useState("");
   const [policyName, setPolicyName] = useState("");
   const [monthlyAmount, setMonthlyAmount] = useState("");
+  const { tenantPoliciesList } = useAccount();
+
+  const categoryEmojiMap: Record<string, string> = {
+    medical: "🏥",
+    transport: "🚗",
+    meals: "🍽️",
+    accomodation: "🏨",
+    gym: "💪",
+    others: "💰",
+  };
+
+  const displayPolicies = Array.isArray(tenantPoliciesList) ? tenantPoliciesList : [];
 
   const filteredEmployees = employees.filter(
     (emp) =>
@@ -124,18 +137,15 @@ export default function CreatePool() {
             <Text style={styles.stepSubtitle}>Choose which category to assign</Text>
 
             <View style={styles.poolList}>
-              {pools.map((pool) => {
-                const isSelected = selectedPolicy === pool.id;
-                const colors = poolColorClasses[pool.color] || {
-                  bg: "#F9FAFB",
-                  border: "#E5E7EB",
-                };
+              {displayPolicies.map((policy) => {
+                const isSelected = selectedPolicy === policy.tenant_policy_id;
+                const emoji = categoryEmojiMap[policy.category?.toLowerCase()] || categoryEmojiMap["others"];
 
                 return (
                   <TouchableOpacity
-                    key={pool.id}
+                    key={policy.tenant_policy_id}
                     onPress={() => {
-                      setSelectedPolicy(pool.id);
+                      setSelectedPolicy(policy.tenant_policy_id);
                     }}
                     style={[
                       styles.poolRow,
@@ -148,17 +158,17 @@ export default function CreatePool() {
                             },
                           ]
                         : {
-                            backgroundColor: colors.bg,
+                            backgroundColor: "#F9FAFB",
                             borderColor: "transparent",
                           },
                     ]}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.poolEmoji}>{pool.emoji}</Text>
+                    <Text style={styles.poolEmoji}>{emoji}</Text>
                     <View style={styles.poolInfo}>
-                      <Text style={styles.poolName}>{pool.name}</Text>
+                      <Text style={styles.poolName}>{policy.policy_name}</Text>
                       <Text style={styles.poolAmount}>
-                        RM {pool.defaultAmount}/month
+                        RM {policy.max_limit}/month
                       </Text>
                     </View>
                   </TouchableOpacity>

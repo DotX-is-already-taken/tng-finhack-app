@@ -19,7 +19,6 @@ export const getAllowanceSummary = async (user_tenant_id: string, accessToken: s
     }
 
     const data = await response.json();
-    console.log("Allowance summary fetched successfully:", data);
 
     return data;
   } catch (error) {
@@ -32,7 +31,6 @@ export const getAllowanceSummary = async (user_tenant_id: string, accessToken: s
 export const getAllowanceDetails = async (policy_group_id: string, accessToken: string, user_tenant_id: string) => {
   try {
     const url = `${ENV.API_BASE_URL}/allowance-detail?policy_group_id=${policy_group_id}&user_tenant_id=${user_tenant_id}`;
-    console.log( `Fetching allowance details for policy_group_id: ${policy_group_id}, user_tenant_id: ${user_tenant_id}`, accessToken );
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -55,6 +53,8 @@ export const getAllowanceDetails = async (policy_group_id: string, accessToken: 
       policy_group_description: data.policy_group_description,
       policy_group_status: data.policy_group_status,
       max_limit: data.max_limit,
+      consumed_amount: data.consumed_amount,
+      remaining_amount: data.remaining_amount,
       transactions: data.transactions.map((tx: any) => ({
         payment_id: tx.payment_id,
         merchant_id: tx.merchant_id,
@@ -66,8 +66,6 @@ export const getAllowanceDetails = async (policy_group_id: string, accessToken: 
         created_at: tx.created_at,
       })),
     };
-
-    console.log("Allowance details fetched successfully:", allowanceDetails);
 
     return allowanceDetails;
   } catch (error) {

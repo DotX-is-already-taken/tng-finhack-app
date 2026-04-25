@@ -1,4 +1,5 @@
-import { activities, pools } from "@/mockData/admin_dashboard";
+import { useAccount } from "@/context/AccountContext";
+import { activities } from "@/mockData/admin_dashboard";
 import styles from "@/styles/admin_dashboard";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -8,22 +9,54 @@ type AdminDashboardSectionProps = {
   onSwitchToPersonal?: () => void;
 };
 
+const policyUIMap: Record<
+  string,
+  { icon: string; bg: string; border: string }
+> = {
+  medical: { icon: "🏥", bg: "#FDECEC", border: "#FBCACA" },
+  transport: { icon: "🚗", bg: "#ECF2FF", border: "#C5D8FF" },
+  meals: { icon: "🍽️", bg: "#FFF7E8", border: "#F9E0B0" },
+  accomodation: { icon: "🏨", bg: "#F5F3FF", border: "#DDD6FE" },
+  "gym/wellness": { icon: "💪", bg: "#ECFDF3", border: "#C5F2D8" },
+  "phone/internet": { icon: "📱", bg: "#F0F9FF", border: "#B9E6FE" },
+};
+
 export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) {
   const router = useRouter();
+  const { tenantOverview, tenantPools } = useAccount();
+
+  const displayPools = tenantPools && tenantPools.length > 0 ? tenantPools : [];
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.statsHeaderCard}>
         <Text style={styles.statsLabel}>Total Allowance Distributed</Text>
-        <Text style={styles.statsValue}>RM 45,750.00</Text>
+        <Text style={styles.statsValue}>
+          {tenantOverview?.currency === "MYR"
+            ? "RM"
+            : tenantOverview?.currency || "RM"}{" "}
+          {tenantOverview?.total_allowance_allocated
+            ? tenantOverview.total_allowance_allocated.toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                },
+              )
+            : "0.00"}
+        </Text>
         <View style={styles.statsGrid}>
           <View style={styles.statsMiniCard}>
             <Text style={styles.statsMiniLabel}>Active Employees</Text>
-            <Text style={styles.statsMiniValue}>24</Text>
+            <Text style={styles.statsMiniValue}>
+              {tenantOverview?.active_employee_count ?? 0}
+            </Text>
           </View>
           <View style={styles.statsMiniCard}>
             <Text style={styles.statsMiniLabel}>Active Pools</Text>
-            <Text style={styles.statsMiniValue}>3</Text>
+            <Text style={styles.statsMiniValue}>
+              {tenantOverview?.active_pool_count ?? 0}
+            </Text>
           </View>
         </View>
       </View>
@@ -73,54 +106,76 @@ export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) 
         </View>
       </View>
 
-      <View style={styles.card}>
+      <View style={styles.pool_card}>
         <View style={styles.cardHeaderRow}>
           <Text style={styles.cardTitle}>Active Pools</Text>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push("/allowance_details")}
-          >
-            <Text style={styles.linkText}>View All</Text>
-          </TouchableOpacity>
         </View>
 
-        {pools.map((pool) => (
-          <TouchableOpacity
-            key={pool.id}
-            activeOpacity={0.85}
-            onPress={() => router.push(`/allowance_details?type=${pool.id}`)}
-            style={[
-              styles.poolCard,
-              { backgroundColor: pool.bg, borderColor: pool.border },
-            ]}
-          >
-            <View style={styles.poolTopRow}>
-              <View style={styles.poolIconWrap}>
-                <Text style={styles.poolIcon}>{pool.icon}</Text>
-              </View>
-              <View style={styles.poolTitleWrap}>
-                <Text style={styles.poolTitle}>{pool.name}</Text>
-                <Text style={styles.poolSub}>{pool.subtitle}</Text>
-              </View>
-            </View>
-            <View style={styles.poolStatsGrid}>
-              <View style={styles.poolStatBox}>
-                <Text style={styles.poolStatLabel}>Allocated</Text>
-                <Text style={styles.poolStatValue}>{pool.allocated}</Text>
-              </View>
-              <View style={styles.poolStatBox}>
-                <Text style={styles.poolStatLabel}>Used</Text>
-                <Text style={styles.poolStatValue}>{pool.used}</Text>
-              </View>
-              <View style={styles.poolStatBox}>
-                <Text style={styles.poolStatLabel}>Remaining</Text>
-                <Text style={[styles.poolStatValue, styles.remainingValue]}>
-                  {pool.remaining}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+        <ScrollView
+          nestedScrollEnabled={true}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 10, paddingHorizontal: 2 }}
+        >
+          {displayPools.length > 0 ? (
+            displayPools.map((pool) => {
+              const ui = policyUIMap[pool.category] || {
+                icon: "💰",
+                bg: "#F9FAFB",
+                border: "#E5E7EB",
+              };
+              const currency = pool.currency || "RM";
+
+              return (
+                <TouchableOpacity
+                  key={pool.pool_id}
+                  activeOpacity={0.7}
+                  style={[
+                    styles.poolCardItem,
+                    { backgroundColor: ui.bg, borderColor: ui.border },
+                  ]}
+                >
+                  <View style={styles.poolTopRow}>
+                    <View style={styles.poolIconWrap}>
+                      <Text style={styles.poolIcon}>{ui.icon}</Text>
+                    </View>
+                    <View style={styles.poolTitleWrap}>
+                      <Text style={styles.poolTitle}>{pool.pool_name}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.poolStatsGrid}>
+                    <View style={styles.poolStatBox}>
+                      <Text style={styles.poolStatLabel}>Allocated</Text>
+                      <Text style={styles.poolStatValue}>
+                        {currency} {(pool.total_limit || 0).toLocaleString()}
+                      </Text>
+                    </View>
+                    <View style={styles.poolStatBox}>
+                      <Text style={styles.poolStatLabel}>Used</Text>
+                      <Text style={styles.poolStatValue}>
+                        {currency} {(pool.used_amount || 0).toLocaleString()}
+                      </Text>
+                    </View>
+                    <View style={styles.poolStatBox}>
+                      <Text style={styles.poolStatLabel}>Remaining</Text>
+                      <Text
+                        style={[styles.poolStatValue, styles.remainingValue]}
+                      >
+                        {currency}{" "}
+                        {(pool.remaining_limit || 0).toLocaleString()}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          ) : (
+            <Text
+              style={{ textAlign: "center", padding: 20, color: "#6B7280" }}
+            >
+              No active pools found
+            </Text>
+          )}
+        </ScrollView>
       </View>
 
       <View style={styles.card}>
