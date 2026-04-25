@@ -1,6 +1,6 @@
 import ENV from "../constants/env";
 
-export const getAuth = async (phone: string) => {
+export const getAuth = async (phone: string , password: string) => {
   try {
     const url = `${ENV.API_BASE_URL}/auth/login`;
     const response = await fetch(url, {
@@ -8,7 +8,7 @@ export const getAuth = async (phone: string) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ phone, password }),
     });
 
     if (!response.ok) {

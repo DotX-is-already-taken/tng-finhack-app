@@ -5,36 +5,81 @@ import {
   useCameraPermissions,
 } from "expo-camera";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ScanPage() {
-  const [scanned, setScanned] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
+  const [showRescan, setShowRescan] = useState(false);
   const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
+  const insets = useSafeAreaInsets();
+  const scanLineAnim = useRef(new Animated.Value(0)).current;
 
-  const handleBarCodeScanned = (result: BarcodeScanningResult) => {
-    setScanned(true);
-    // Navigate to a new page with the scanned data
-    router.push(
-      `/scanned_details_page?data=${encodeURIComponent(result.data)}`,
-    );
-  };
+  // Use a ref so we never re-create the function!
+  const isScannedRef = useRef(false);
+
+  const [scannerSettings] = useState<any>({
+    barcodeTypes: ["qr"],
+  });
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scanLineAnim, {
+          toValue: 250,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scanLineAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, [scanLineAnim]);
+
+  // ZERO dependencies. This function reference NEVER changes.
+  const handleBarCodeScanned = React.useCallback((result: BarcodeScanningResult) => {
+    if (isScannedRef.current) return;
+    
+    isScannedRef.current = true;
+    setShowRescan(true);
+    
+    console.log("✅ RAW SCANNED DATA:", result.data);
+
+    // Dynamic import to avoid dependency array issues with router
+    import('expo-router').then(({ router }) => {
+      router.push({
+        pathname: "/scanned_details_page",
+        params: { data: result.data },
+      });
+    });
+  }, []);
 
   if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
+    return <View style={styles.container} />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: "center", color: "white" }}>
-          We need your permission to show the camera
+      <View style={styles.permissionContainer}>
+        <Ionicons name="camera-outline" size={80} color="#007AFF" style={{ marginBottom: 20 }} />
+        <Text style={styles.permissionTitle}>Camera Access Required</Text>
+        <Text style={styles.permissionText}>
+          We need your permission to access the camera in order to scan QR codes.
         </Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <Text style={styles.permissionButtonText}>Grant Permission</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -42,42 +87,88 @@ export default function ScanPage() {
   return (
     <View style={styles.container}>
       <CameraView
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        facing="back"
+        onBarcodeScanned={handleBarCodeScanned}
+        barcodeScannerSettings={scannerSettings}
         style={StyleSheet.absoluteFillObject}
         enableTorch={isFlashOn}
       />
       <View style={styles.overlay}>
-        <View style={styles.topOverlay} />
+        <View style={styles.topOverlay}>
+          <Text
+            style={[styles.headerText, { marginTop: Math.max(insets.top, 40) }]}
+          >
+            Scan QR Code
+          </Text>
+          <Text style={styles.subHeaderText}>
+            Align QR code within the frame
+          </Text>
+        </View>
+
         <View style={styles.middleOverlay}>
           <View style={styles.sideOverlay} />
-          <View style={styles.scannerBox} />
+
+          <View style={styles.scannerBox}>
+            {/* Animated Scan Line */}
+            <Animated.View
+              style={[
+                styles.scanLine,
+                { transform: [{ translateY: scanLineAnim }] },
+              ]}
+            />
+
+            {/* Viewfinder Corners */}
+            <View style={[styles.corner, styles.topLeft]} />
+            <View style={[styles.corner, styles.topRight]} />
+            <View style={[styles.corner, styles.bottomLeft]} />
+            <View style={[styles.corner, styles.bottomRight]} />
+          </View>
+
           <View style={styles.sideOverlay} />
         </View>
+
         <View style={styles.bottomOverlay}>
           <TouchableOpacity
             style={styles.flashButton}
             onPress={() => setIsFlashOn((current) => !current)}
+            activeOpacity={0.7}
           >
-            <Ionicons
-              name={isFlashOn ? "flash" : "flash-off"}
-              size={32}
-              color="white"
-            />
+            <View
+              style={[
+                styles.flashIconContainer,
+                isFlashOn && styles.flashIconContainerActive,
+              ]}
+            >
+              <Ionicons
+                name={isFlashOn ? "flash" : "flash-off"}
+                size={24}
+                color={isFlashOn ? "#000" : "#fff"}
+              />
+            </View>
             <Text style={styles.flashButtonText}>
               {isFlashOn ? "Flash On" : "Flash Off"}
             </Text>
           </TouchableOpacity>
+
+          {showRescan && (
+            <TouchableOpacity
+              style={styles.rescanButton}
+              onPress={() => {
+                isScannedRef.current = false;
+                setShowRescan(false);
+              }}
+            >
+              <Ionicons
+                name="refresh"
+                size={20}
+                color="#fff"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
-      {scanned && (
-        <View style={styles.rescanButtonContainer}>
-          <Button
-            title={"Tap to Scan Again"}
-            onPress={() => setScanned(false)}
-            color="#fff"
-          />
-        </View>
-      )}
     </View>
   );
 }
@@ -86,6 +177,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+  },
+  permissionContainer: {
+    flex: 1,
+    backgroundColor: "#FAFAFC",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+  },
+  permissionTitle: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 12,
+  },
+  permissionText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 32,
+    lineHeight: 24,
+  },
+  permissionButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 24,
+    width: "100%",
+    alignItems: "center",
+  },
+  permissionButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   overlay: {
     flex: 1,
@@ -97,7 +221,19 @@ const styles = StyleSheet.create({
   },
   topOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  headerText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  subHeaderText: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 16,
   },
   middleOverlay: {
     flexDirection: "row",
@@ -105,35 +241,96 @@ const styles = StyleSheet.create({
   },
   sideOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.6)",
   },
   scannerBox: {
     width: 250,
     height: 250,
-    borderWidth: 2,
-    borderColor: "white",
-    borderRadius: 10,
+    backgroundColor: "transparent",
+    overflow: "hidden",
+  },
+  scanLine: {
+    width: "100%",
+    height: 3,
+    backgroundColor: "#007AFF",
+    shadowColor: "#007AFF",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  corner: {
+    position: "absolute",
+    width: 40,
+    height: 40,
+    borderColor: "#007AFF",
+  },
+  topLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
+    borderTopLeftRadius: 16,
+  },
+  topRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 4,
+    borderRightWidth: 4,
+    borderTopRightRadius: 16,
+  },
+  bottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
+    borderBottomLeftRadius: 16,
+  },
+  bottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
+    borderBottomRightRadius: 16,
   },
   bottomOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
-  },
-  rescanButtonContainer: {
-    position: "absolute",
-    bottom: 50,
-    left: 0,
-    right: 0,
-    alignItems: "center",
   },
   flashButton: {
-    position: "absolute",
-    top: 60,
     alignItems: "center",
+    marginBottom: 24,
+  },
+  flashIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  flashIconContainerActive: {
+    backgroundColor: "#fff",
   },
   flashButtonText: {
     color: "white",
-    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  rescanButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+  },
+  rescanButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

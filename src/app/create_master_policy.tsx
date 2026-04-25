@@ -15,9 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function CreateMasterPolicy() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [poolName, setPoolName] = useState("");
   const [monthlyAmount, setMonthlyAmount] = useState("");
-  const [employeeCount, setEmployeeCount] = useState("");
 
   const insets = useSafeAreaInsets();
 
@@ -26,7 +24,7 @@ export default function CreateMasterPolicy() {
   };
 
   const isFormValid =
-    selectedCategory && poolName && monthlyAmount && employeeCount;
+    selectedCategory && monthlyAmount;
 
   return (
     <View style={{ ...globalStyles.safearea, paddingTop: insets.top }}>
@@ -99,17 +97,6 @@ export default function CreateMasterPolicy() {
             <Text style={styles.stepSubtitle}>Configure policy settings</Text>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Policy Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Medical Allowance 2026"
-                value={poolName}
-                onChangeText={setPoolName}
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Maximum Amount per User</Text>
               <View style={styles.amountInputContainer}>
                 <Text style={styles.currencyLabel}>RM</Text>
@@ -127,38 +114,6 @@ export default function CreateMasterPolicy() {
               </Text>
             </View>
           </View>
-
-          {/* Summary */}
-          {isFormValid ? (
-            <View style={styles.summaryCard}>
-              <Text style={styles.summaryTitle}>Pool Summary</Text>
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>
-                  Monthly allocation per employee:
-                </Text>
-                <Text style={styles.summaryValue}>RM {monthlyAmount}</Text>
-              </View>
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Number of employees:</Text>
-                <Text style={styles.summaryValue}>{employeeCount}</Text>
-              </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.totalLabel}>Total Monthly Budget:</Text>
-                <Text style={styles.totalValue}>
-                  RM{" "}
-                  {(
-                    parseFloat(monthlyAmount || "0") *
-                    parseInt(employeeCount || "0")
-                  ).toLocaleString()}
-                </Text>
-              </View>
-            </View>
-          ) : null}
 
           {/* Create Button */}
           <TouchableOpacity

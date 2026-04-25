@@ -19,7 +19,7 @@ export function useLogin() {
     setError(false);
 
     try {
-      const authData = await getAuth(phone);
+      const authData = await getAuth(phone, password);
       setAuthData(authData);
       const userData = await getUser(authData.access_token, authData.user_id);
       setUserData(userData);

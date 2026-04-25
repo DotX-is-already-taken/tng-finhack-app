@@ -25,8 +25,18 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
 
       {accountMode === "personal" && (
-        <NativeTabs.Trigger name="employee_manage">
-          <NativeTabs.Trigger.Label>Manage</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger name="scan_page">
+          <NativeTabs.Trigger.Label>Scan</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require("@/assets/images/tabIcons/explore.png")}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      )}
+
+      {accountMode === "personal" && (
+        <NativeTabs.Trigger name="chat-page">
+          <NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
             src={require("@/assets/images/tabIcons/explore.png")}
             renderingMode="template"
