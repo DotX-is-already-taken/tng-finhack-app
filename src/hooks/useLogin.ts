@@ -1,3 +1,4 @@
+import { getAllowanceSummary } from "@/api/getUserAllowance";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { getAuth, getUser } from "../api/getUser";
@@ -6,7 +7,8 @@ import { useAccount } from "../context/AccountContext";
 
 export function useLogin() {
   const router = useRouter();
-  const { setAuthData, setUserData, setUserTenants } = useAccount();
+  const { setAuthData, setUserData, setUserTenants, setUserAllowanceSummary } =
+    useAccount();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setError] = useState(false);
@@ -17,12 +19,17 @@ export function useLogin() {
     setError(false);
 
     try {
-      const authData = await getAuth( phone );
+      const authData = await getAuth(phone);
       setAuthData(authData);
       const userData = await getUser(authData.access_token, authData.user_id);
       setUserData(userData);
-    //   const tenants = await getTenants(authData.user_id);
-    //   setUserTenants(tenants);
+      const tenants = await getTenants(authData.user_id, authData.access_token);
+      setUserTenants(tenants);
+      const allowanceSummary = await getAllowanceSummary(
+        tenants.user_tenant_id,
+        authData.access_token,
+      );
+      setUserAllowanceSummary(allowanceSummary);
 
       if (authData.access_token) {
         router.push("/home");

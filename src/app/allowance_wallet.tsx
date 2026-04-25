@@ -1,11 +1,12 @@
-import { getUserPool } from "@/api/getPool";
+import { getAllowanceDetails } from "@/api/getUserAllowance";
+import { useAccount } from "@/context/AccountContext";
 import allowances from "@/mockData/allowance_details";
 import styles from "@/styles/allowance_wallet";
 import globalstyle from "@/styles/global";
 import { spendingCategories } from "@/types/allowance";
 import { Progress } from "@ant-design/react-native";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useRef } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -13,29 +14,78 @@ const getStatusColor = (status: string): string => {
   return status === "Low balance" ? "#ff4d4f" : "#52c41a";
 };
 
+const getStatusFromPercentage = (percentage: number): string => {
+  return percentage > 75 ? "Low balance" : "Available";
+};
+
+async function getAllowanceDetailsData(
+  policy_group_id: string,
+  accessToken: string,
+  user_tenant_id: string,
+) {
+  try {
+    const data = await getAllowanceDetails(
+      policy_group_id,
+      accessToken,
+      user_tenant_id,
+    );
+    return data;
+  } catch (error) {
+    console.error("Error fetching allowance details:", error);
+    throw error;
+  }
+}
+
 export default function AllowanceWallets() {
   const router = useRouter();
+
+  const data = useRef({
+    user_tenant_id: "",
+    policy_group_id: "",
+    policy_group_name: "",
+    policy_group_description: "",
+    policy_group_status: "",
+    max_limit: 0,
+    transactions: [],
+  });
+
   const insets = useSafeAreaInsets();
+  const { userAllowanceSummary, authData } = useAccount();
 
-  async function getPool(user_tenant_id: "33333333-3333-3333-3333-333333333333",) {
-    await getUserPool(user_tenant_id)
-      .then((pool) => {
-        console.log("User's pool data:", pool);
-      })
-      .catch((error) => {
-        console.error("Error fetching user's pool:", error);
-      });
-  }
-
-  async function getPolicyGroups(pool_id: string) {
-    await getPolicyGroups(pool_id)
-      .then((policyGroups) => {
-        console.log("Policy groups:", policyGroups);
-      })
-      .catch((error) => {
-        console.error("Error fetching policy groups:", error);
-      });
+  const iconMap: { [key: number]: string } = {
+    0: "✈️",
+    1: "🏨",
+    2: "🍽️",
+    3: "🚗",
+    4: "📱",
   };
+
+  const totalAvailable =
+    userAllowanceSummary &&
+    userAllowanceSummary.items &&
+    userAllowanceSummary.items.length > 0
+      ? userAllowanceSummary.items.reduce(
+          (sum, item) => sum + (item.remaining_amount || 0),
+          0,
+        )
+      : 0;
+
+  const totalLimit =
+    userAllowanceSummary &&
+    userAllowanceSummary.items &&
+    userAllowanceSummary.items.length > 0
+      ? userAllowanceSummary.items.reduce(
+          (sum, item) => sum + (item.max_limit || 0),
+          0,
+        )
+      : 0;
+
+  const currency =
+    userAllowanceSummary &&
+    userAllowanceSummary.items &&
+    userAllowanceSummary.items.length > 0
+      ? userAllowanceSummary.items[0].currency
+      : "MYR";
 
   return (
     <View style={[globalstyle.safearea, { paddingTop: insets.top }]}>
@@ -54,9 +104,11 @@ export default function AllowanceWallets() {
           {/* Total summary card */}
           <View style={styles.summaryCard}>
             <Text style={styles.summaryLabel}>Total Available</Text>
-            <Text style={styles.summaryAmount}>RM 935.00</Text>
+            <Text style={styles.summaryAmount}>
+              {currency} {totalAvailable.toFixed(2)}
+            </Text>
             <Text style={styles.summarySubtext}>
-              from RM 1,800.00 monthly limit
+              from {currency} {totalLimit.toFixed(2)} monthly limit
             </Text>
           </View>
         </View>
@@ -71,77 +123,109 @@ export default function AllowanceWallets() {
         >
           {/* Allowance cards */}
           <View style={styles.contentContainer}>
-            {Object.values(allowances).map((allowance) => (
-              <TouchableOpacity
-                key={allowance.id}
-                onPress={() =>
-                  router.push({
-                    pathname: "/allowance_details",
-                    params: { type: allowance.id },
-                  })
-                }
-                activeOpacity={0.7}
-              >
-                <View style={styles.allowanceCard}>
-                  {/* Card header */}
-                  <View style={styles.cardHeader}>
-                    <View style={{ flexDirection: "row", flex: 1 }}>
-                      <View style={styles.cardIconContainer}>
-                        <Text style={styles.cardIcon}>{allowance.icon}</Text>
+            {userAllowanceSummary &&
+            userAllowanceSummary.items &&
+            userAllowanceSummary.items.length > 0 ? (
+              userAllowanceSummary.items.map((allowance, index) => {
+                const percentage =
+                  (allowance.consumed_amount / allowance.max_limit) * 100;
+                const status = getStatusFromPercentage(percentage);
+                const icon = iconMap[index % 5] || "💼";
+
+                return (
+                  <TouchableOpacity
+                    key={allowance.policy_group_id}
+                    onPress={async () => {
+                      try {
+                        if (!authData?.access_token) {
+                          console.error("Access token not available");
+                          return;
+                        }
+                        data.current = await getAllowanceDetailsData(
+                          allowance.policy_group_id,
+                          authData.access_token,
+                          userAllowanceSummary.user_tenant_id,
+                        );
+                      } catch (error) {
+                        console.error(
+                          "Failed to fetch allowance details:",
+                          error,
+                        );
+                      }
+                      router.push({
+                        pathname: "/allowance_details",
+                        params: {
+                          data: JSON.stringify(data.current),
+                        },
+                      });
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.allowanceCard}>
+                      {/* Card header */}
+                      <View style={styles.cardHeader}>
+                        <View style={{ flexDirection: "row", flex: 1 }}>
+                          <View style={styles.cardIconContainer}>
+                            <Text style={styles.cardIcon}>{icon}</Text>
+                          </View>
+                          <View style={styles.cardTitleSection}>
+                            <Text style={styles.cardTitle}>
+                              {allowance.policy_group_name}
+                            </Text>
+                            <View
+                              style={[
+                                styles.statusTag,
+                                {
+                                  backgroundColor: getStatusColor(status),
+                                },
+                              ]}
+                            >
+                              <Text style={styles.statusText}>{status}</Text>
+                            </View>
+                          </View>
+                        </View>
                       </View>
-                      <View style={styles.cardTitleSection}>
-                        <Text style={styles.cardTitle}>{allowance.name}</Text>
-                        <View
-                          style={[
-                            styles.statusTag,
-                            {
-                              backgroundColor: getStatusColor(allowance.status),
-                            },
-                          ]}
-                        >
-                          <Text style={styles.statusText}>
-                            {allowance.status}
+
+                      {/* Balance info */}
+                      <View style={styles.balanceRow}>
+                        <View style={styles.balanceSection}>
+                          <Text style={styles.balanceLabel}>Remaining</Text>
+                          <Text style={styles.balanceAmount}>
+                            {currency} {allowance.remaining_amount?.toFixed(2)}
+                          </Text>
+                        </View>
+                        <View style={styles.balanceSection}>
+                          <Text style={styles.limitLabel}>Monthly Limit</Text>
+                          <Text style={styles.limitAmount}>
+                            {currency} {allowance.max_limit?.toFixed(2)}
                           </Text>
                         </View>
                       </View>
-                    </View>
-                    {/*<ChevronRight color="#ccc" size={20} />*/}
-                  </View>
 
-                  {/* Balance info */}
-                  <View style={styles.balanceRow}>
-                    <View style={styles.balanceSection}>
-                      <Text style={styles.balanceLabel}>Remaining</Text>
-                      <Text style={styles.balanceAmount}>
-                        RM {allowance.remaining.toFixed(2)}
-                      </Text>
+                      {/* Progress bar */}
+                      <View style={styles.progressContainer}>
+                        <View style={styles.progressLabel}>
+                          <Text style={styles.progressLabelText}>
+                            Used {currency}{" "}
+                            {allowance.consumed_amount?.toFixed(2)}
+                          </Text>
+                          <Text style={styles.progressPercentage}>
+                            {Math.round(percentage)}%
+                          </Text>
+                        </View>
+                        <Progress
+                          percent={Math.min(Math.round(percentage), 100)}
+                        />
+                      </View>
                     </View>
-                    <View style={styles.balanceSection}>
-                      <Text style={styles.limitLabel}>Monthly Limit</Text>
-                      <Text style={styles.limitAmount}>
-                        RM {allowance.limit.toFixed(2)}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Progress bar */}
-                  <View style={styles.progressContainer}>
-                    <View style={styles.progressLabel}>
-                      <Text style={styles.progressLabelText}>
-                        Used RM {allowance.used.toFixed(2)}
-                      </Text>
-                      <Text style={styles.progressPercentage}>
-                        {100 - allowance.progress}%
-                      </Text>
-                    </View>
-                    <Progress
-                      percent={allowance.progress}
-                      // strokeColor={getProgressColor(allowance.progress)}
-                    />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <Text style={{ padding: 16, textAlign: "center", color: "#999" }}>
+                No allowance data available
+              </Text>
+            )}
           </View>
 
           {/* Spending Categories */}

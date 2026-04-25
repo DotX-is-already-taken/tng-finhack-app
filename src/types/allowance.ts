@@ -1,23 +1,31 @@
 type AllowanceType = "medical" | "gym" | "meals" | "transport";
 
 type Transaction = {
-    date: string;
-    merchant: string;
-    amount: number;
+  date: string;
+  merchant: string;
+  amount: number;
 };
 
-type Allowance = {
-    id: string;
-    name: string;
-    icon: string;
-    color: string;
-    remaining: number;
-    limit: number;
-    used: number;
-    progress: number;
-    transactions: Transaction[];
-    status: string;
-};
+interface AllowanceDetails {
+  user_tenant_id: string;
+  policy_group_id: string;
+  policy_group_name: string;
+  policy_group_description: string;
+  policy_group_status: string;
+  max_limit: number;
+  transactions: [
+    {
+      payment_id: string;
+      merchant_id: string;
+      raw_vendor_name: string;
+      amount: number;
+      currency: string;
+      payment_status: string;
+      control_plane_payment_intent_id: string;
+      created_at: string;
+    },
+  ];
+}
 
 const spendingCategories: Record<
   string,
@@ -44,5 +52,6 @@ const spendingCategories: Record<
     { emoji: "🅿️", name: "Parking" },
   ],
 };
-export type { AllowanceType, Transaction, Allowance };
 export { spendingCategories };
+export type { AllowanceDetails, AllowanceType, Transaction };
+

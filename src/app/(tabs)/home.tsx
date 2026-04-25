@@ -42,6 +42,7 @@ export default function Home() {
   const { accountMode, setAccountMode } = useAccount();
   const { userData } = useAccount();
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
+  const { userAllowanceSummary } = useAccount();
 
   const isBusiness = accountMode === "business";
 
@@ -194,7 +195,19 @@ export default function Home() {
                         Allowance Wallets
                       </Text>
                       <Text style={styles.allowanceSubtext}>
-                        Total RM 935.00 available
+                        Total{" "}
+                        {userAllowanceSummary &&
+                        userAllowanceSummary.items &&
+                        userAllowanceSummary.items.length > 0
+                          ? `${userAllowanceSummary.items[0].currency} ${userAllowanceSummary.items
+                              .reduce(
+                                (sum, item) =>
+                                  sum + (item.remaining_amount || 0),
+                                0,
+                              )
+                              .toFixed(2)}`
+                          : "RM 0.00"}{" "}
+                        available
                       </Text>
                     </View>
                   </View>
@@ -206,30 +219,32 @@ export default function Home() {
                   </TouchableOpacity>
                 </View>
 
-                <AllowanceItem
-                  icon="🏥"
-                  title="Medical"
-                  amount="RM 450.00"
-                  used="RM 150"
-                  total="RM 600"
-                  percentage={25}
-                />
-                <AllowanceItem
-                  icon="💪"
-                  title="Gym / Wellness"
-                  amount="RM 180.00"
-                  used="RM 120"
-                  total="RM 300"
-                  percentage={40}
-                />
-                <AllowanceItem
-                  icon="🍽️"
-                  title="Meals"
-                  amount="RM 220.00"
-                  used="RM 280"
-                  total="RM 500"
-                  percentage={56}
-                />
+                {userAllowanceSummary &&
+                userAllowanceSummary.items &&
+                userAllowanceSummary.items.length > 0 ? (
+                  userAllowanceSummary.items.map((allowance, index) => {
+                    const percentage =
+                      (allowance.consumed_amount / allowance.max_limit) * 100;
+                    const icon = ["✈️", "🏨", "🍽️", "🚗", "📱"][index % 5];
+                    return (
+                      <AllowanceItem
+                        key={allowance.policy_group_id}
+                        icon={icon}
+                        title={allowance.policy_group_name.slice(0, 25)}
+                        amount={`${allowance.currency} ${allowance.remaining_amount?.toFixed(2)}`}
+                        used={`${allowance.currency} ${allowance.consumed_amount?.toFixed(2)}`}
+                        total={`${allowance.currency} ${allowance.max_limit?.toFixed(2)}`}
+                        percentage={Math.min(Math.round(percentage), 100)}
+                      />
+                    );
+                  })
+                ) : (
+                  <Text
+                    style={{ padding: 16, textAlign: "center", color: "#999" }}
+                  >
+                    No allowance data available
+                  </Text>
+                )}
               </View>
             </View>
 
