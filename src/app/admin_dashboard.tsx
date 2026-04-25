@@ -64,7 +64,7 @@ export function AdminDashboardSection({}: Readonly<AdminDashboardSectionProps>) 
           <TouchableOpacity
             style={[styles.actionTile, { backgroundColor: "#F3EEFF" }]}
             activeOpacity={0.8}
-            onPress={() => router.push("/add_employee")}
+            onPress={() => router.push("/create_pool")}
           >
             <Text style={styles.actionEmoji}>👥</Text>
             <Text style={styles.actionTitle}>Create Pool</Text>

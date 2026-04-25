@@ -1,5 +1,6 @@
 import { employees, pools } from "@/mockData/add_employee";
 import { poolColorClasses, styles } from "@/styles/add_employee";
+import { styles as masterStyles } from "@/styles/create_pool";
 import globalStyles from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -12,12 +13,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function AddEmployee() {
+export default function CreatePool() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedPolicy, setSelectedPolicy] = useState("");
+  const [policyName, setPolicyName] = useState("");
+  const [monthlyAmount, setMonthlyAmount] = useState("");
 
   const filteredEmployees = employees.filter(
     (emp) =>
@@ -29,6 +32,7 @@ export default function AddEmployee() {
     router.back();
   };
 
+  const isFormValid = policyName && selectedEmployee && selectedPolicy;
 
   return (
     <View style={[globalStyles.safearea, { paddingTop: insets.top + 8 }]}>
@@ -38,18 +42,36 @@ export default function AddEmployee() {
             <TouchableOpacity
               onPress={() => router.back()}
               style={styles.backButton}
-            >
+            >   
               <Text style={styles.backButtonText}>{"\u276E"}</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Add Employee to Pool</Text>
+            <Text style={styles.headerTitle}>Create Allowance Pool</Text>
             <View style={{ width: 24 }} />
           </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Step 1: Select Employee */}
           <View style={styles.card}>
-            <Text style={styles.stepTitle}>Step 1: Select Employee</Text>
+            <Text style={styles.stepTitle}>Step 1: Pool Details</Text>
+            <Text style={styles.stepSubtitle}>Configure Pool settings</Text>
+
+            <View style={masterStyles.inputGroup}>
+              <Text style={masterStyles.inputLabel}>Pool Name</Text>
+              <View style={masterStyles.input}>
+                <TextInput
+                  style={{ flex: 1, fontSize: 16, color: "#1F2937" }}
+                  placeholder="e.g. Weekly Coffee Allowance"
+                  value={policyName}
+                  onChangeText={setPolicyName}
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Step 2: Select Employee */}
+          <View style={styles.card}>
+            <Text style={styles.stepTitle}>Step 2: Select Employee</Text>
             <Text style={styles.stepSubtitle}>
               Search and choose an employee
             </Text>
@@ -96,10 +118,10 @@ export default function AddEmployee() {
             </ScrollView>
           </View>
 
-          {/* Step 2: Select Pool */}
+          {/* Step 3: Select Pool */}
           <View style={styles.card}>
-            <Text style={styles.stepTitle}>Step 2: Select Allowance Pool</Text>
-            <Text style={styles.stepSubtitle}>Choose which pool to assign</Text>
+            <Text style={styles.stepTitle}>Step 3: Select Category</Text>
+            <Text style={styles.stepSubtitle}>Choose which category to assign</Text>
 
             <View style={styles.poolList}>
               {pools.map((pool) => {
@@ -148,11 +170,14 @@ export default function AddEmployee() {
           {/* Add Button */}
           <TouchableOpacity
             onPress={handleAddEmployee}
-            style={styles.createButton}
+            style={[
+              styles.createButton,
+              !isFormValid && styles.createButtonDisabled
+            ]}
             activeOpacity={0.8}
-            disabled={selectedEmployee === "" || selectedPolicy === ""}
+            disabled={!isFormValid}
           >
-            <Text style={styles.createButtonText}>Add Employee to Pool</Text>
+            <Text style={styles.createButtonText}>Create Allowance Pool</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

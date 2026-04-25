@@ -68,9 +68,7 @@ export default function CreatePolicyGroup() {
           {/* Step 1: Select Category */}
           <View style={styles.card}>
             <Text style={styles.stepTitle}>Step 1: Select Category</Text>
-            <Text style={styles.stepSubtitle}>
-              Choose the type of Pool
-            </Text>
+            <Text style={styles.stepSubtitle}>Choose the type of Pool</Text>
 
             <View style={styles.grid}>
               {masterPolicies.map((policy) => {
@@ -123,12 +121,26 @@ export default function CreatePolicyGroup() {
 
           {/* Step 2: Policy Details */}
           <View style={styles.card}>
-            <Text style={styles.stepTitle}>Step 2: Policy Amount</Text>
+            <Text style={styles.stepTitle}>Step 2: Policy Details</Text>
             <Text style={styles.stepSubtitle}>Configure policy settings</Text>
 
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Policy Name</Text>
+              <View style={styles.input}>
+                <TextInput
+                  style={{ flex: 1, fontSize: 16, color: "#1F2937" }}
+                  keyboardType="default"
+                  placeholder="Enter policy name"
+                  value={poolName}
+                  onChangeText={setPoolName}
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+              <Text style={styles.helperText}>A name for the policy group</Text>
+            </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Maximum Amount per User</Text>
+              <Text style={styles.inputLabel}>Maximum Amount per Policy</Text>
               <View style={styles.amountInputContainer}>
                 <Text style={styles.currencyLabel}>RM</Text>
                 <TextInput
