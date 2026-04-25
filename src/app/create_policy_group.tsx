@@ -1,9 +1,8 @@
-import categories from "@/mockData/create_policy";
-import masterPolicies from "@/mockData/master_policy";
-import { colorClasses, styles } from "@/styles/create_pool";
+import { useAccount } from "@/context/AccountContext";
+import { styles } from "@/styles/create_pool";
 import globalStyles from "@/styles/global";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   ScrollView,
   Text,
@@ -12,15 +11,37 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAccount } from "@/context/AccountContext";
 
-const categoryUIMap: Record<string, { icon: string; bg: string; border: string; iconBg: string }> = {
+const categoryUIMap: Record<
+  string,
+  { icon: string; bg: string; border: string; iconBg: string }
+> = {
   medical: { icon: "🏥", bg: "#FDECEC", border: "#FBCACA", iconBg: "#FFEBEE" },
-  transport: { icon: "🚗", bg: "#ECF2FF", border: "#C5D8FF", iconBg: "#E3F2FD" },
+  transport: {
+    icon: "🚗",
+    bg: "#ECF2FF",
+    border: "#C5D8FF",
+    iconBg: "#E3F2FD",
+  },
   meals: { icon: "🍽️", bg: "#FFF7E8", border: "#F9E0B0", iconBg: "#FFF8E1" },
-  accomodation: { icon: "🏨", bg: "#F5F3FF", border: "#DDD6FE", iconBg: "#F3E5F5" },
-  "gym/wellness": { icon: "💪", bg: "#ECFDF3", border: "#C5F2D8", iconBg: "#E8F5E9" },
-  "phone/internet": { icon: "📱", bg: "#F0F9FF", border: "#B9E6FE", iconBg: "#E1F5FE" },
+  accomodation: {
+    icon: "🏨",
+    bg: "#F5F3FF",
+    border: "#DDD6FE",
+    iconBg: "#F3E5F5",
+  },
+  "gym/wellness": {
+    icon: "💪",
+    bg: "#ECFDF3",
+    border: "#C5F2D8",
+    iconBg: "#E8F5E9",
+  },
+  "phone/internet": {
+    icon: "📱",
+    bg: "#F0F9FF",
+    border: "#B9E6FE",
+    iconBg: "#E1F5FE",
+  },
   others: { icon: "💰", bg: "#F9FAFB", border: "#E5E7EB", iconBg: "#F5F5F5" },
 };
 
@@ -34,7 +55,9 @@ export default function CreatePolicyGroup() {
 
   const insets = useSafeAreaInsets();
 
-  const selectedPolicyData = tenantPolicies?.find(p => p.id === selectedCategory);
+  const selectedPolicyData = tenantPolicies?.find(
+    (p) => p.id === selectedCategory,
+  );
   const maxLimit = selectedPolicyData?.max_limit || 0;
   const isOverLimit = parseFloat(monthlyAmount) > maxLimit;
 
@@ -43,7 +66,7 @@ export default function CreatePolicyGroup() {
   };
 
   const isFormValid =
-    selectedCategory && poolName && monthlyAmount && employeeCount && !isOverLimit;
+    selectedCategory && poolName && monthlyAmount && !isOverLimit;
 
   return (
     <View style={{ ...globalStyles.safearea, paddingTop: insets.top }}>
@@ -158,38 +181,6 @@ export default function CreatePolicyGroup() {
               )}
             </View>
           </View>
-
-          {/* Summary */}
-          {isFormValid ? (
-            <View style={styles.summaryCard}>
-              <Text style={styles.summaryTitle}>Pool Summary</Text>
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>
-                  Monthly allocation per employee:
-                </Text>
-                <Text style={styles.summaryValue}>RM {monthlyAmount}</Text>
-              </View>
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Number of employees:</Text>
-                <Text style={styles.summaryValue}>{employeeCount}</Text>
-              </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.summaryRow}>
-                <Text style={styles.totalLabel}>Total Monthly Budget:</Text>
-                <Text style={styles.totalValue}>
-                  RM{" "}
-                  {(
-                    parseFloat(monthlyAmount || "0") *
-                    parseInt(employeeCount || "0")
-                  ).toLocaleString()}
-                </Text>
-              </View>
-            </View>
-          ) : null}
 
           {/* Create Button */}
           <TouchableOpacity

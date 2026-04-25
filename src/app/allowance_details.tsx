@@ -21,21 +21,19 @@ export default function AllowanceDetailScreen() {
   const resolvedType: AllowanceType = (
     typeValue && typeValue in allowanceData ? typeValue : "medical"
   ) as AllowanceType;
-  
+
   const mockAllowance = allowanceData[resolvedType];
 
   const name = details?.policy_group_name || mockAllowance.name;
   const limit = details?.max_limit || mockAllowance.limit;
   const transactions = details?.transactions || mockAllowance.transactions;
-  
-  const consumed = details 
-    ? (details.consumed_amount || 0)
-    : mockAllowance.used;
-    
+
+  const consumed = details ? details.consumed_amount || 0 : mockAllowance.used;
+
   const remaining = details
-    ? (details.remaining_amount || 0)
+    ? details.remaining_amount || 0
     : mockAllowance.remaining;
-    
+
   const progress = (consumed / limit) * 100;
 
   const daysElapsed = 15;
@@ -60,22 +58,16 @@ export default function AllowanceDetailScreen() {
 
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Remaining Balance</Text>
-          <Text style={styles.balanceValue}>
-            RM {remaining.toFixed(2)}
-          </Text>
+          <Text style={styles.balanceValue}>RM {remaining.toFixed(2)}</Text>
           <Progress percent={progress} />
           <View style={styles.balanceMetaRow}>
             <View>
               <Text style={styles.metaLabel}>Used</Text>
-              <Text style={styles.metaValue}>
-                RM {consumed.toFixed(2)}
-              </Text>
+              <Text style={styles.metaValue}>RM {consumed.toFixed(2)}</Text>
             </View>
             <View style={styles.metaRight}>
               <Text style={styles.metaLabel}>Monthly Limit</Text>
-              <Text style={styles.metaValue}>
-                RM {limit.toFixed(2)}
-              </Text>
+              <Text style={styles.metaValue}>RM {limit.toFixed(2)}</Text>
             </View>
           </View>
         </View>
@@ -102,9 +94,7 @@ export default function AllowanceDetailScreen() {
           <View style={styles.statCard}>
             <Text style={styles.statEmoji}>🎯</Text>
             <Text style={styles.statLabel}>Transactions</Text>
-            <Text style={styles.statValue}>
-              {transactions.length}
-            </Text>
+            <Text style={styles.statValue}>{transactions.length}</Text>
           </View>
         </View>
 
@@ -112,28 +102,26 @@ export default function AllowanceDetailScreen() {
           <Text style={styles.cardTitle}>Smart Insights</Text>
 
           <View style={styles.insightBox}>
-            <Text style={styles.insightTitle}>💡 Spending Pace</Text>
+            <Text style={styles.insightTitle}>
+              💡 What can this be used for?
+            </Text>
             <Text style={styles.insightText}>
-              You are spending {progress > 50 ? "faster" : "slower"}{" "}
-              than average. At this rate, expected month-end balance is RM{" "}
-              {projectedBalance.toFixed(0)}.
+              Covers Transport, Parking, Fuel under Transport benefits
             </Text>
           </View>
 
           <View style={styles.insightBox}>
-            <Text style={styles.insightTitle}>📈 Budget Range</Text>
+            <Text style={styles.insightTitle}>📈 Where can I use it?</Text>
             <Text style={styles.insightText}>
-              Similar users typically spend RM{" "}
-              {(limit * 0.6).toFixed(0)} - RM{" "}
-              {(limit * 0.8).toFixed(0)}.
+              Use at Grab, AirAsia Ride, MyCar.'
             </Text>
           </View>
 
           <View style={styles.insightBox}>
-            <Text style={styles.insightTitle}>💰 Savings Opportunity</Text>
+            <Text style={styles.insightTitle}>💰 Latest News and promos</Text>
             <Text style={styles.insightText}>
-              You could save up to RM 50 by choosing alternative merchants
-              nearby.
+              Grab offers corporate solutions for employee commuting, dining,
+              and logistics in Southeast Asia.
             </Text>
           </View>
 
@@ -145,9 +133,10 @@ export default function AllowanceDetailScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Recent Transactions</Text>
           {transactions.map((transaction: any, index: number) => {
-            const merchant = transaction.raw_vendor_name || transaction.merchant;
-            const date = transaction.created_at 
-              ? new Date(transaction.created_at).toLocaleDateString() 
+            const merchant =
+              transaction.raw_vendor_name || transaction.merchant;
+            const date = transaction.created_at
+              ? new Date(transaction.created_at).toLocaleDateString()
               : transaction.date;
             const amount = transaction.amount;
 

@@ -1,56 +1,64 @@
-# Welcome to your Expo app 👋
+# TNG Finhack App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern fintech application built for the TNG Finhack, focusing on seamless allowance management and business-to-employee financial interactions.
 
-## Get started
+## Requirements
 
-1. Install dependencies
+1.  **NodeJS V24**
+2.  **XCode** (for iOS) / **Android Studio** (for Android)
+3.  **Physical Device & Cable** (recommended for rapid installation and testing)
 
+## Features
+
+- 👤 **Dual Mode Support**: Seamlessly switch between Personal and Business (Admin) accounts.
+- 💳 **Allowance Wallets**: Track and manage employment benefits like Medical, Travel, Meals, and Wellness.
+- 📊 **Admin Dashboard**: Business owners can monitor active pools, manage policies, and track employee spending.
+- 🛡️ **Policy Management**: Create and configure master policies with custom limits and MCC restrictions.
+- 🔍 **Smart QR Scanning**: Pay at merchants with real-time verification and automatic company allowance detection.
+- 📈 **Spending Insights**: Visual progress tracking and pace analysis for all allowance categories.
+
+## Get Started
+
+1. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
-   ```bash
-   npx expo start
+2. **Environment Setup**
+   Create a `.env` file in the root directory and add your API base URL:
+   ```env
+   EXPO_PUBLIC_API_BASE_URL=http://your-api-ip:8000/v1
    ```
 
-In the output, you'll find options to open the app in a
+3. **Install into iOS/Android Device**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   **iOS**
+   ```bash
+   npm run ios
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   **Android**
+   ```bash
+   npm run android
+   ```
 
-## Get a fresh project
+4. **Start the server for wireless live debug**
+   ```bash
+   npm start
+   ```
 
-When you're ready, run:
+## Tech Stack
 
-```bash
-npm run reset-project
-```
+- **Framework**: Expo (React Native)
+- **Language**: TypeScript
+- **State Management**: React Context API (AccountProvider)
+- **Navigation**: Expo Router (File-based)
+- **Styling**: Vanilla React Native StyleSheet
+- **Icons**: Ionicons & FontAwesome via @expo/vector-icons
+- **Components**: Ant Design Mobile RN (Progress bars, etc.)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
+*Built with ❤️ for the TNG Finhack*
 
-### Other setup steps
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

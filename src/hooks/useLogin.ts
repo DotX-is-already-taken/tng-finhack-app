@@ -32,7 +32,7 @@ export function useLogin() {
       setUserAllowanceSummary(allowanceSummary);
 
       if (authData.access_token) {
-        router.push("/home");
+        router.replace("/home");
       } else {
         setError(true);
       }
