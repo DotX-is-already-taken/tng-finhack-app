@@ -97,7 +97,7 @@ export default function CreateMasterPolicy() {
             <Text style={styles.stepSubtitle}>Configure policy settings</Text>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Maximum Amount per User</Text>
+              <Text style={styles.inputLabel}>Maximum Amount per Policy</Text>
               <View style={styles.amountInputContainer}>
                 <Text style={styles.currencyLabel}>RM</Text>
                 <TextInput

@@ -1,11 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-  BarcodeScanningResult,
-  CameraView,
-  useCameraPermissions,
-} from "expo-camera";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
+import { useRouter, useFocusEffect } from "expo-router";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Animated,
   StyleSheet,
@@ -17,18 +13,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ScanPage() {
   const [isFlashOn, setIsFlashOn] = useState(false);
-  const [showRescan, setShowRescan] = useState(false);
-  const router = useRouter();
-  const [permission, requestPermission] = useCameraPermissions();
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const device = useCameraDevice("back");
   const insets = useSafeAreaInsets();
   const scanLineAnim = useRef(new Animated.Value(0)).current;
 
-  // Use a ref so we never re-create the function!
   const isScannedRef = useRef(false);
 
-  const [scannerSettings] = useState<any>({
-    barcodeTypes: ["qr"],
-  });
+  useFocusEffect(
+    useCallback(() => {
+      isScannedRef.current = false;
+    }, [])
+  );
 
   useEffect(() => {
     Animated.loop(
@@ -47,29 +43,27 @@ export default function ScanPage() {
     ).start();
   }, [scanLineAnim]);
 
-  // ZERO dependencies. This function reference NEVER changes.
-  const handleBarCodeScanned = React.useCallback((result: BarcodeScanningResult) => {
-    if (isScannedRef.current) return;
-    
-    isScannedRef.current = true;
-    setShowRescan(true);
-    
-    console.log("✅ RAW SCANNED DATA:", result.data);
+  const codeScanner = useCodeScanner({
+    codeTypes: ["qr"],
+    onCodeScanned: (codes) => {
+      if (isScannedRef.current || codes.length === 0) return;
+      
+      const value = codes[0].value;
+      if (!value) return;
 
-    // Dynamic import to avoid dependency array issues with router
-    import('expo-router').then(({ router }) => {
-      router.push({
-        pathname: "/scanned_details_page",
-        params: { data: result.data },
+      isScannedRef.current = true;
+
+
+      import('expo-router').then(({ router }) => {
+        router.push({
+          pathname: "/scanned_details_page",
+          params: { data: value },
+        });
       });
-    });
-  }, []);
+    }
+  });
 
-  if (!permission) {
-    return <View style={styles.container} />;
-  }
-
-  if (!permission.granted) {
+  if (!hasPermission) {
     return (
       <View style={styles.permissionContainer}>
         <Ionicons name="camera-outline" size={80} color="#007AFF" style={{ marginBottom: 20 }} />
@@ -84,14 +78,18 @@ export default function ScanPage() {
     );
   }
 
+  if (device == null) {
+    return <View style={styles.container} />;
+  }
+
   return (
     <View style={styles.container}>
-      <CameraView
-        facing="back"
-        onBarcodeScanned={handleBarCodeScanned}
-        barcodeScannerSettings={scannerSettings}
+      <Camera
         style={StyleSheet.absoluteFillObject}
-        enableTorch={isFlashOn}
+        device={device}
+        isActive={true}
+        codeScanner={codeScanner}
+        torch={isFlashOn ? "on" : "off"}
       />
       <View style={styles.overlay}>
         <View style={styles.topOverlay}>
@@ -149,24 +147,6 @@ export default function ScanPage() {
               {isFlashOn ? "Flash On" : "Flash Off"}
             </Text>
           </TouchableOpacity>
-
-          {showRescan && (
-            <TouchableOpacity
-              style={styles.rescanButton}
-              onPress={() => {
-                isScannedRef.current = false;
-                setShowRescan(false);
-              }}
-            >
-              <Ionicons
-                name="refresh"
-                size={20}
-                color="#fff"
-                style={{ marginRight: 8 }}
-              />
-              <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
-            </TouchableOpacity>
-          )}
         </View>
       </View>
     </View>

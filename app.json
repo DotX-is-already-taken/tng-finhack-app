@@ -36,6 +36,13 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera to scan QR codes.",
+          "enableCodeScanner": true
+        }
       ]
     ],
     "experiments": {
