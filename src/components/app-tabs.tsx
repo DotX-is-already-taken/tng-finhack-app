@@ -34,7 +34,7 @@ export default function AppTabs() {
         </NativeTabs.Trigger>
       )}
 
-      {accountMode === "personal" && (
+      {accountMode === "business" && (
         <NativeTabs.Trigger name="chat-page">
           <NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
